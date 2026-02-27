@@ -2,7 +2,7 @@
 # Priority 20: Stripe webhook — MUST be public (Stripe cannot provide a JWT).
 #              Verified internally via construct_event(raw_body, sig_header, secret).
 # Priority 10: OPTIONS preflight — public CORS handling
-# Priority 1:  All other /payments endpoints — require JWT
+# Priority 5:  All other /payments endpoints — require JWT
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -59,7 +59,7 @@ spec:
     - {{ .Values.global.entryPoint | default "web" }}
   routes:
     - match: "Host(`{{ .Values.global.domain }}`) && PathPrefix(`/api/payments`)"
-      priority: 1
+      priority: 5
       middlewares:
         - name: {{ include "payments-ms.jwtAuthMiddleware" . }}
         - name: {{ include "payments-ms.apiStripMiddleware" . }}

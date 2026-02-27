@@ -1,7 +1,7 @@
 # users-ms routing mirrors the Docker Compose label priorities exactly.
 #
 # Priority 10 (public): /auth/* endpoints + POST /users (registration) + OPTIONS (CORS preflight)
-# Priority 1 (protected): all other /users and /scopes endpoints require JWT via forwardAuth
+# Priority 5 (protected): all other /users and /scopes endpoints require JWT via forwardAuth
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -36,7 +36,7 @@ spec:
     - {{ .Values.global.entryPoint | default "web" }}
   routes:
     - match: "Host(`{{ .Values.global.domain }}`) && (PathPrefix(`/api/users`) || PathPrefix(`/api/scopes`))"
-      priority: 1
+      priority: 5
       middlewares:
         - name: {{ include "users-ms.jwtAuthMiddleware" . }}
         - name: {{ include "users-ms.apiStripMiddleware" . }}

@@ -1,6 +1,6 @@
 # venues-ms routing:
 # Priority 10 (public): GET and OPTIONS — browsing venues requires no account
-# Priority 1 (protected): all writes (create/update/delete venue) require JWT
+# Priority 5 (protected): all writes (create/update/delete venue) require JWT
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -35,7 +35,7 @@ spec:
     - {{ .Values.global.entryPoint | default "web" }}
   routes:
     - match: "Host(`{{ .Values.global.domain }}`) && PathPrefix(`/api/venues`)"
-      priority: 1
+      priority: 5
       middlewares:
         - name: {{ include "venues-ms.jwtAuthMiddleware" . }}
         - name: {{ include "venues-ms.apiStripMiddleware" . }}
