@@ -12,4 +12,4 @@ resources:
   limits:
     memory: 128Mi
 global:
-  domain: ploshtadka.bg
+  domain: xn--80aalycsf6f.xn--90ae

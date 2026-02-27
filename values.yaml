@@ -1,40 +1,29 @@
 # ── Global values (propagated to every subchart as .Values.global.*) ──────────
 global:
-  # Domain exposed via Traefik (used in IngressRoute match rules)
-  domain: ploshtadka.bg
-
-  # CloudNativePG creates this secret when the Cluster is initialised.
-  # It contains the key "uri" with the full postgresql:// connection string.
+  domain: xn--80aalycsf6f.xn--90ae
   dbSecretName: ploshtadka-db-app
-
-  # Traefik entrypoint name. "web" (HTTP) for local, "websecure" (HTTPS) for prod.
   entryPoint: web
 
   tls:
     enabled: false
-    # Name of the certificatesResolver defined in the Traefik Helm values.
     certResolver: letsencrypt
 
-# ── Umbrella-level infra: Redis ───────────────────────────────────────────────
 redis:
   architecture: standalone
   auth:
-    enabled: false        # internal cache only; no external exposure
+    enabled: false
   master:
     persistence:
-      enabled: false      # cache is ephemeral by design
+      enabled: false
   replica:
-    replicaCount: 0       # standalone mode
+    replicaCount: 0
 
-# ── PostgreSQL cluster configuration (rendered in templates/cluster.yaml) ─────
 postgresql:
-  instances: 1            # increase to 3 for HA in prod
+  instances: 1
   storage:
     size: 10Gi
-  # Override with a sealed secret that contains POSTGRES_PASSWORD
-  credentialsSecretName: ploshtadka-db-credentials
 
-# ── Application subcharts ─────────────────────────────────────────────────────
+  credentialsSecretName: ploshtadka-db-credentials
 
 users-ms:
   replicaCount: 1
@@ -49,8 +38,7 @@ users-ms:
     accessTokenExpireMinutes: "120"
     redisUrl: redis://ploshtadka-redis-master:6379/0
   secrets:
-    # Name of the Sealed Secret that provides SECRET_KEY and GOOGLE_CLIENT_ID.
-    # Create with: kubectl create secret generic users-ms-secrets ... | kubeseal
+    # provides SECRET_KEY and GOOGLE_CLIENT_ID.
     name: users-ms-secrets
   resources:
     requests:
@@ -123,11 +111,11 @@ payments-ms:
     port: 8003
   config:
     bookingsMsUrl: http://bookings-ms:8002
-    stripeSuccessUrl: http://ploshtadka.bg/bookings?payment=success
-    stripeCancelUrl: http://ploshtadka.bg/bookings?payment=cancelled
+    stripeSuccessUrl: http://xn--80aalycsf6f.xn--90ae/bookings?payment=success
+    stripeCancelUrl: http://xn--80aalycsf6f.xn--90ae/bookings?payment=cancelled
     stripeCheckoutExpiresMinutes: "30"
   secrets:
-    # Sealed Secret providing STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET
+    # provides STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET
     name: payments-ms-secrets
   resources:
     requests:

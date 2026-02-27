@@ -23,5 +23,5 @@ hpa:
   maxReplicas: 5
   targetCPUUtilizationPercentage: 70
 global:
-  domain: ploshtadka.bg
+  domain: xn--80aalycsf6f.xn--90ae
   dbSecretName: ploshtadka-db-app

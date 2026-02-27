@@ -1,6 +1,6 @@
 # Staging overrides — higher replica counts, DEBUG logging, smaller resources
 global:
-  domain: staging.ploshtadka.bg
+  domain: staging.площадка.бг
 
 postgresql:
   instances: 1

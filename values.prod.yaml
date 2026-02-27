@@ -1,13 +1,13 @@
 # Production overrides — HA PostgreSQL, HPA enabled, production URLs
 global:
-  domain: ploshtadka.bg
+  domain: xn--80aalycsf6f.xn--90ae
   entryPoint: websecure
   tls:
     enabled: true
     certResolver: letsencrypt
 
 postgresql:
-  instances: 3            # primary + 2 replicas
+  instances: 1
   storage:
     size: 50Gi
 
@@ -18,53 +18,53 @@ redis:
       size: 2Gi
 
 users-ms:
-  replicaCount: 2
+  replicaCount: 1
   image:
     pullPolicy: Always
   config:
     logLevel: INFO
   hpa:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 8
-
-venues-ms:
-  replicaCount: 2
-  image:
-    pullPolicy: Always
-  hpa:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 8
-
-bookings-ms:
-  replicaCount: 2
-  image:
-    pullPolicy: Always
-  hpa:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 8
-
-payments-ms:
-  replicaCount: 2
-  image:
-    pullPolicy: Always
-  hpa:
-    enabled: true
-    minReplicas: 2
+    enabled: false
+    minReplicas: 1
     maxReplicas: 4
 
-frontend:
-  replicaCount: 2
+venues-ms:
+  replicaCount: 1
   image:
     pullPolicy: Always
   hpa:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 6
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 4
+
+bookings-ms:
+  replicaCount: 1
+  image:
+    pullPolicy: Always
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 4
+
+payments-ms:
+  replicaCount: 1
+  image:
+    pullPolicy: Always
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 2
+
+frontend:
+  replicaCount: 1
+  image:
+    pullPolicy: Always
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
 
 admin-panel:
-  replicaCount: 2
+  replicaCount: 1
   image:
     pullPolicy: Always

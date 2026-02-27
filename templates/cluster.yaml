@@ -25,7 +25,7 @@ spec:
   bootstrap:
     initdb:
       database: ploshtadka
-      owner: ploshtadka
+      owner: app
       # Sealed secret providing username + password for the DB owner.
       # Create with:
       #   kubectl create secret generic ploshtadka-db-credentials \
