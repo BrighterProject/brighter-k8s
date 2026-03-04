@@ -11,3 +11,5 @@ data:
   CONTACT_EMAIL: {{ .Values.config.contactEmail | quote }}
   CONTACT_RATE_LIMIT: {{ .Values.config.contactRateLimit | quote }}
   CONTACT_RATE_WINDOW: {{ .Values.config.contactRateWindow | quote }}
+  NOTIFICATIONS_MS_URL: {{ .Values.config.notificationsMsUrl | quote }}
+  FRONTEND_BASE_URL: {{ .Values.config.frontendBaseUrl | quote }}
