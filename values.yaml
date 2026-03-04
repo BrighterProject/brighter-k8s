@@ -141,6 +141,7 @@ notifications-ms:
   config:
     logLevel: INFO
     frontendBaseUrl: http://xn--80aalycsf6f.xn--90ae
+    fromEmail: 'Ploshtadka.BG <noreply@площадка.бг>'
   secrets:
     # provides RESEND_API_KEY
     name: notifications-ms-secrets

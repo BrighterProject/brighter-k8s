@@ -6,5 +6,5 @@ metadata:
     {{- include "notifications-ms.labels" . | nindent 4 }}
 data:
   LOG_LEVEL: {{ .Values.config.logLevel | quote }}
-  DEFAULT_FROM_EMAIL: "Ploshtadka.BG <noreply@ploshtadka.bg>"
+  DEFAULT_FROM_EMAIL: {{ .Values.config.fromEmail | quote }}
   FRONTEND_BASE_URL: {{ .Values.config.frontendBaseUrl | quote }}
