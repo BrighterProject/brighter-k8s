@@ -1,6 +1,6 @@
 replicaCount: 1
 image:
-  repository: ghcr.io/ploshtadkabg/ploshtadka-admin-panel
+  repository: ghcr.io/brighterbg/brighter-admin-panel
   tag: latest
   pullPolicy: IfNotPresent
 service:

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# seal.sh — create or re-seal Kubernetes secrets for PloshtadkaBG
+# seal.sh — create or re-seal Kubernetes secrets for BrighterProject
 #
 # Prerequisites:
 #   brew install kubeseal   (or the equivalent for your OS)
@@ -22,11 +22,11 @@ TARGET=${2:-all}
 OUT=sealed-secrets
 
 seal_db() {
-  echo "  → ploshtadka-db-credentials"
+  echo "  → brighter-db-credentials"
   read -rs -p "  PostgreSQL password: " PG_PASS; echo
-  kubectl create secret generic ploshtadka-db-credentials \
+  kubectl create secret generic brighter-db-credentials \
     --namespace "$NS" \
-    --from-literal=username=ploshtadka \
+    --from-literal=username=brighter \
     --from-literal=password="$PG_PASS" \
     --dry-run=client -o yaml \
     | kubeseal --format yaml \

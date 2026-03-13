@@ -2,7 +2,7 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/ploshtadkabg/ploshtadka-users-ms
+  repository: ghcr.io/brighterbg/brighter-users-ms
   tag: latest
   pullPolicy: IfNotPresent
 
@@ -12,8 +12,8 @@ service:
 config:
   logLevel: INFO
   accessTokenExpireMinutes: "120"
-  redisUrl: redis://ploshtadka-redis-master:6379/0
-  contactEmail: ploshtadka.bg@gmail.com
+  redisUrl: redis://brighter-redis-master:6379/0
+  contactEmail: brighter.bg@gmail.com
   contactRateLimit: "5"
   contactRateWindow: "3600"
 
@@ -35,4 +35,4 @@ hpa:
 
 global:
   domain: xn--80aalycsf6f.xn--90ae
-  dbSecretName: ploshtadka-db-app
+  dbSecretName: brighter-db-app

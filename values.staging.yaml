@@ -13,7 +13,7 @@ users-ms:
     logLevel: DEBUG
     accessTokenExpireMinutes: "60"
 
-venues-ms:
+properties-ms:
   replicaCount: 1
   config:
     logLevel: DEBUG
@@ -26,11 +26,11 @@ bookings-ms:
 payments-ms:
   replicaCount: 1
   config:
-    stripeSuccessUrl: http://staging.ploshtadka.bg/bookings?payment=success
-    stripeCancelUrl: http://staging.ploshtadka.bg/bookings?payment=cancelled
+    stripeSuccessUrl: http://staging.brighter.bg/bookings?payment=success
+    stripeCancelUrl: http://staging.brighter.bg/bookings?payment=cancelled
 
 notifications-ms:
   replicaCount: 1
   config:
     logLevel: DEBUG
-    frontendBaseUrl: http://staging.ploshtadka.bg
+    frontendBaseUrl: http://staging.brighter.bg

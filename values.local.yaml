@@ -7,7 +7,7 @@ global:
 users-ms:
   image:
     pullPolicy: Never
-venues-ms:
+properties-ms:
   image:
     pullPolicy: Never
 bookings-ms:

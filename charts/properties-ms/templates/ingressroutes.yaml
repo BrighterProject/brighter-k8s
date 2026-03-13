@@ -1,0 +1,48 @@
+# properties-ms routing:
+# Priority 10 (public): GET and OPTIONS — browsing properties requires no account
+# Priority 5 (protected): all writes (create/update/delete property) require JWT
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ include "properties-ms.fullname" . }}-public
+  labels:
+    {{- include "properties-ms.labels" . | nindent 4 }}
+spec:
+  entryPoints:
+    - {{ .Values.global.entryPoint | default "web" }}
+  routes:
+    - match: "Host(`{{ .Values.global.domain }}`) && (Method(`GET`) || Method(`OPTIONS`)) && PathPrefix(`/api/properties`)"
+      priority: 10
+      middlewares:
+        - name: {{ include "properties-ms.apiStripMiddleware" . }}
+      services:
+        - name: properties-ms
+          port: {{ .Values.service.port }}
+  {{- if .Values.global.tls.enabled }}
+  tls:
+    certResolver: {{ .Values.global.tls.certResolver }}
+  {{- end }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ include "properties-ms.fullname" . }}-protected
+  labels:
+    {{- include "properties-ms.labels" . | nindent 4 }}
+spec:
+  entryPoints:
+    - {{ .Values.global.entryPoint | default "web" }}
+  routes:
+    - match: "Host(`{{ .Values.global.domain }}`) && PathPrefix(`/api/properties`)"
+      priority: 5
+      middlewares:
+        - name: {{ include "properties-ms.jwtAuthMiddleware" . }}
+        - name: {{ include "properties-ms.apiStripMiddleware" . }}
+      services:
+        - name: properties-ms
+          port: {{ .Values.service.port }}
+  {{- if .Values.global.tls.enabled }}
+  tls:
+    certResolver: {{ .Values.global.tls.certResolver }}
+  {{- end }}

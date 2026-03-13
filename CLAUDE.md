@@ -1,6 +1,6 @@
-## Helm Umbrella Chart — ploshtadka-k8s
+## Helm Umbrella Chart — brighter-k8s
 
-Deploys the full PloshtadkaBG stack to Kubernetes.
+Deploys the full BrighterProject stack to Kubernetes.
 
 ## Commands
 
@@ -9,18 +9,18 @@ Deploys the full PloshtadkaBG stack to Kubernetes.
 helm dependency update
 
 # Local (Minikube — images built locally)
-helm install ploshtadka . -f values.yaml -f values.local.yaml
+helm install brighter . -f values.yaml -f values.local.yaml
 
 # Upgrade — specify only changed services
-helm upgrade ploshtadka . -f values.yaml -f values.prod.yaml \
+helm upgrade brighter . -f values.yaml -f values.prod.yaml \
   --set "users-ms.image.tag=<sha>"
 
 # Rollback
-helm rollback ploshtadka
+helm rollback brighter
 
 # Rotate secrets
 ./scripts/seal.sh && kubectl apply -f sealed-secrets/
-kubectl rollout restart deployment ploshtadka-users-ms
+kubectl rollout restart deployment brighter-users-ms
 ```
 
 ## Structure
@@ -32,7 +32,7 @@ values.staging.yaml    # staging overrides
 values.prod.yaml       # prod: HA postgres, HPA, TLS
 charts/
   users-ms/            # JWT issuer + forwardAuth target
-  venues-ms/
+  properties-ms/
   bookings-ms/
   payments-ms/
   frontend/            # TanStack Start SSR, port 3000
@@ -60,8 +60,8 @@ Traefik and CloudNativePG are NOT chart dependencies — they install CRDs that 
 
 | Secret | Created by | Contains |
 |---|---|---|
-| `ploshtadka-db-credentials` | Manual | `username`, `password` |
-| `ploshtadka-db-app` | CloudNativePG | `uri` — **must use `asyncpg://` scheme, not `postgresql://`** |
+| `brighter-db-credentials` | Manual | `username`, `password` |
+| `brighter-db-app` | CloudNativePG | `uri` — **must use `asyncpg://` scheme, not `postgresql://`** |
 | `users-ms-secrets` | seal.sh | `SECRET_KEY`, `GOOGLE_CLIENT_ID`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` |
 | `payments-ms-secrets` | seal.sh | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` |
 | `notifications-ms-secrets` | seal.sh | `RESEND_API_KEY` |

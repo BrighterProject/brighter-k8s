@@ -1,6 +1,6 @@
 replicaCount: 1
 image:
-  repository: ghcr.io/ploshtadkabg/ploshtadka-bookings-ms
+  repository: ghcr.io/brighterbg/brighter-bookings-ms
   tag: latest
   pullPolicy: IfNotPresent
 service:
@@ -8,9 +8,9 @@ service:
 config:
   logLevel: INFO
   usersMsUrl: http://users-ms:8000
-  venuesMsUrl: http://venues-ms:8001
+  propertiesMsUrl: http://properties-ms:8001
   paymentsMsUrl: http://payments-ms:8003
-  redisUrl: redis://ploshtadka-redis-master:6379/0
+  redisUrl: redis://brighter-redis-master:6379/0
 resources:
   requests:
     memory: 128Mi
@@ -24,4 +24,4 @@ hpa:
   targetCPUUtilizationPercentage: 70
 global:
   domain: xn--80aalycsf6f.xn--90ae
-  dbSecretName: ploshtadka-db-app
+  dbSecretName: brighter-db-app

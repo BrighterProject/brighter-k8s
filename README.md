@@ -1,6 +1,6 @@
-# ploshtadka-k8s
+# brighter-k8s
 
-Helm umbrella chart for the PloshtadkaBG sports venue booking platform.
+Helm umbrella chart for the BrighterProject sports property booking platform.
 
 ## Structure
 
@@ -15,7 +15,7 @@ templates/
   cluster.yaml              # CloudNativePG Cluster resource
 charts/
   users-ms/                 # Auth service — JWT issuer + Traefik forwardAuth target
-  venues-ms/                # Venues CRUD
+  properties-ms/                # Properties CRUD
   bookings-ms/              # Bookings + slots
   payments-ms/              # Stripe checkout + webhooks
   frontend/                 # TanStack Start SSR app
@@ -65,13 +65,13 @@ kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/latest/
 ### 3. Create dev secrets (plain — no kubeseal needed locally)
 
 ```bash
-kubectl create secret generic ploshtadka-db-credentials \
-  --from-literal=username=ploshtadka \
+kubectl create secret generic brighter-db-credentials \
+  --from-literal=username=brighter \
   --from-literal=password=devpassword
 
-kubectl create secret generic ploshtadka-db-app \
-  --from-literal=uri="asyncpg://ploshtadka:devpassword@ploshtadka-db-rw:5432/ploshtadka" \
-  --from-literal=username=ploshtadka \
+kubectl create secret generic brighter-db-app \
+  --from-literal=uri="asyncpg://brighter:devpassword@brighter-db-rw:5432/brighter" \
+  --from-literal=username=brighter \
   --from-literal=password=devpassword
 
 kubectl create secret generic users-ms-secrets \
@@ -88,20 +88,20 @@ kubectl create secret generic payments-ms-secrets \
 ```bash
 eval $(minikube docker-env)
 
-docker build -t ghcr.io/ploshtadkabg/ploshtadka-users-ms:latest    ./ploshtadka-users-ms
-docker build -t ghcr.io/ploshtadkabg/ploshtadka-venues-ms:latest   ./ploshtadka-venues-ms
-docker build -t ghcr.io/ploshtadkabg/ploshtadka-bookings-ms:latest ./ploshtadka-bookings-ms
-docker build -t ghcr.io/ploshtadkabg/ploshtadka-payments-ms:latest ./ploshtadka-payments-ms
-docker build -t ghcr.io/ploshtadkabg/ploshtadka-frontend:latest    ./ploshtadka-frontend
-docker build -t ghcr.io/ploshtadkabg/ploshtadka-admin-panel:latest ./ploshtadka-admin-panel
+docker build -t ghcr.io/brighterbg/brighter-users-ms:latest    ./brighter-users-ms
+docker build -t ghcr.io/brighterbg/brighter-properties-ms:latest   ./brighter-properties-ms
+docker build -t ghcr.io/brighterbg/brighter-bookings-ms:latest ./brighter-bookings-ms
+docker build -t ghcr.io/brighterbg/brighter-payments-ms:latest ./brighter-payments-ms
+docker build -t ghcr.io/brighterbg/brighter-frontend:latest    ./brighter-frontend
+docker build -t ghcr.io/brighterbg/brighter-admin-panel:latest ./brighter-admin-panel
 ```
 
 ### 5. Install the chart
 
 ```bash
-cd ploshtadka-k8s
+cd brighter-k8s
 helm dependency update
-helm install ploshtadka . -f values.yaml -f values.local.yaml
+helm install brighter . -f values.yaml -f values.local.yaml
 ```
 
 ### 6. Access services
@@ -119,8 +119,8 @@ kubectl port-forward svc/admin-panel 5173:3000
 
 ```bash
 eval $(minikube docker-env)
-docker build -t ghcr.io/ploshtadkabg/ploshtadka-users-ms:latest ./ploshtadka-users-ms
-kubectl rollout restart deployment ploshtadka-users-ms
+docker build -t ghcr.io/brighterbg/brighter-users-ms:latest ./brighter-users-ms
+kubectl rollout restart deployment brighter-users-ms
 ```
 
 ---
@@ -163,43 +163,43 @@ Copy the output to your local machine, replace `127.0.0.1` with `<server-ip>`:
 ```bash
 # On local machine
 mkdir -p ~/.kube
-nano ~/.kube/ploshtadka-prod   # paste and replace 127.0.0.1 → <server-ip>
+nano ~/.kube/brighter-prod   # paste and replace 127.0.0.1 → <server-ip>
 
-export KUBECONFIG=~/.kube/ploshtadka-prod
+export KUBECONFIG=~/.kube/brighter-prod
 kubectl get nodes              # should show remote node as Ready
 ```
 
-Add `export KUBECONFIG=~/.kube/ploshtadka-prod` to your `.zshrc` to make it permanent.
+Add `export KUBECONFIG=~/.kube/brighter-prod` to your `.zshrc` to make it permanent.
 
 ### 4. Point DNS to the server
 
 At your DNS provider, create A records:
 
 ```
-ploshtadka.bg      →  <server-ip>
-www.ploshtadka.bg  →  <server-ip>
+brighter.bg      →  <server-ip>
+www.brighter.bg  →  <server-ip>
 ```
 
 Verify propagation:
 ```bash
-dig +short ploshtadka.bg   # must return <server-ip> before proceeding
+dig +short brighter.bg   # must return <server-ip> before proceeding
 ```
 
 ### 5. Push images via CI
 
-The GitHub Actions workflows in each service repo (`.github/workflows/ci.yml`) build and push to `ghcr.io/ploshtadkabg/<service>` automatically on every merge to `main`.
+The GitHub Actions workflows in each service repo (`.github/workflows/ci.yml`) build and push to `ghcr.io/brighterbg/<service>` automatically on every merge to `main`.
 
 **One-time setup per repo** — add this GitHub Actions secret in each service repo that needs it:
 
 | Repo | Secret name | Value |
 |---|---|---|
-| `ploshtadka-frontend` | `VITE_GOOGLE_CLIENT_ID` | Your Google OAuth client ID |
+| `brighter-frontend` | `VITE_GOOGLE_CLIENT_ID` | Your Google OAuth client ID |
 
 `GITHUB_TOKEN` (for ghcr.io push) is automatic — no setup needed.
 
 After pushing to `main`, check that all 6 images appear at:
 ```
-https://github.com/orgs/PloshtadkaBG/packages
+https://github.com/orgs/BrighterProject/packages
 ```
 
 Set each package visibility to **Public**, or create an image pull secret if you keep them private.
@@ -212,7 +212,7 @@ kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/latest/
 kubectl -n kube-system rollout status deploy/sealed-secrets-controller
 
 # Install Traefik (with ACME) + CloudNativePG operator
-cd ploshtadka-k8s
+cd brighter-k8s
 ACME_EMAIL=you@example.com ./scripts/prerequisites.sh
 ```
 
@@ -238,12 +238,12 @@ Apply the sealed secrets to the cluster:
 kubectl apply -f sealed-secrets/
 ```
 
-> **Note:** The `ploshtadka-db-app` secret is not sealed — it is created automatically by CloudNativePG when the cluster bootstraps. The DB URL scheme must be `asyncpg://` (Tortoise ORM requirement). If CloudNativePG creates it with `postgresql://`, recreate it manually:
+> **Note:** The `brighter-db-app` secret is not sealed — it is created automatically by CloudNativePG when the cluster bootstraps. The DB URL scheme must be `asyncpg://` (Tortoise ORM requirement). If CloudNativePG creates it with `postgresql://`, recreate it manually:
 > ```bash
-> kubectl delete secret ploshtadka-db-app
-> kubectl create secret generic ploshtadka-db-app \
->   --from-literal=uri="asyncpg://ploshtadka:<password>@ploshtadka-db-rw:5432/ploshtadka" \
->   --from-literal=username=ploshtadka \
+> kubectl delete secret brighter-db-app
+> kubectl create secret generic brighter-db-app \
+>   --from-literal=uri="asyncpg://brighter:<password>@brighter-db-rw:5432/brighter" \
+>   --from-literal=username=brighter \
 >   --from-literal=password=<password>
 > ```
 
@@ -253,11 +253,11 @@ kubectl apply -f sealed-secrets/
 # Get the image SHA tags from the GitHub Actions run that built them
 # (GitHub UI: repo → Actions → latest CI run → build-push step → image digest)
 
-helm install ploshtadka . \
+helm install brighter . \
   -f values.yaml \
   -f values.prod.yaml \
   --set "users-ms.image.tag=<sha>" \
-  --set "venues-ms.image.tag=<sha>" \
+  --set "properties-ms.image.tag=<sha>" \
   --set "bookings-ms.image.tag=<sha>" \
   --set "payments-ms.image.tag=<sha>" \
   --set "frontend.image.tag=<sha>" \
@@ -270,13 +270,13 @@ kubectl get pods -w   # watch everything come up
 
 ```bash
 # TLS certificate is issued within ~60 seconds of first request
-curl -I https://ploshtadka.bg/api/venues/
+curl -I https://brighter.bg/api/properties/
 # Expected: HTTP/2 200, valid Let's Encrypt certificate
 
-curl -I http://ploshtadka.bg/api/venues/
+curl -I http://brighter.bg/api/properties/
 # Expected: 301 redirect → https://
 
-curl -s https://ploshtadka.bg/api/bookings/ -w "\nstatus: %{http_code}\n"
+curl -s https://brighter.bg/api/bookings/ -w "\nstatus: %{http_code}\n"
 # Expected: 401 (forwardAuth is working)
 ```
 
@@ -287,7 +287,7 @@ curl -s https://ploshtadka.bg/api/bookings/ -w "\nstatus: %{http_code}\n"
 On every merge to `main`, CI builds a new image tagged with the commit SHA. To roll it out:
 
 ```bash
-helm upgrade ploshtadka . \
+helm upgrade brighter . \
   -f values.yaml \
   -f values.prod.yaml \
   --set "users-ms.image.tag=<new-sha>"   # only the services that changed
@@ -297,7 +297,7 @@ Kubernetes performs a rolling update — new pods start before old ones are term
 
 To roll back to the previous version:
 ```bash
-helm rollback ploshtadka
+helm rollback brighter
 ```
 
 ---
@@ -311,8 +311,8 @@ helm rollback ploshtadka
 kubectl apply -f sealed-secrets/
 
 # Restart affected pods to pick up the new secret values
-kubectl rollout restart deployment ploshtadka-users-ms
-kubectl rollout restart deployment ploshtadka-payments-ms
+kubectl rollout restart deployment brighter-users-ms
+kubectl rollout restart deployment brighter-payments-ms
 ```
 
 ---
@@ -323,7 +323,7 @@ kubectl rollout restart deployment ploshtadka-payments-ms
 |---|---|---|
 | Init container `CreateContainerConfigError` | A referenced Secret doesn't exist yet | Create the missing secret; pod retries automatically |
 | Init container `aerich init-db first` | Fresh database — no migration history | Fixed in chart: init container runs `upgrade \|\| init-db && upgrade` |
-| `Unknown DB scheme: postgresql` | Tortoise ORM doesn't understand `postgresql://` | Use `asyncpg://` scheme in `ploshtadka-db-app` secret |
+| `Unknown DB scheme: postgresql` | Tortoise ORM doesn't understand `postgresql://` | Use `asyncpg://` scheme in `brighter-db-app` secret |
 | IngressRoute 404 | Traefik `Host()` matcher requires exact hostname including case | Ensure `global.domain` matches the Host header exactly |
 | forwardAuth 500 | Traefik in `traefik` ns cannot resolve short service name `users-ms` | Use FQDN: `users-ms.default.svc.cluster.local` (already fixed in `middlewares.yaml`) |
 | CRD not found on `helm install` | Traefik/CNPG operators not installed yet | Run `prerequisites.sh` first |

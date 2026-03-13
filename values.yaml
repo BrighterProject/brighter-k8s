@@ -1,7 +1,7 @@
 # ── Global values (propagated to every subchart as .Values.global.*) ──────────
 global:
   domain: xn--80aalycsf6f.xn--90ae
-  dbSecretName: ploshtadka-db-app
+  dbSecretName: brighter-db-app
   entryPoint: web
 
   tls:
@@ -23,12 +23,12 @@ postgresql:
   storage:
     size: 10Gi
 
-  credentialsSecretName: ploshtadka-db-credentials
+  credentialsSecretName: brighter-db-credentials
 
 users-ms:
   replicaCount: 1
   image:
-    repository: ghcr.io/ploshtadkabg/ploshtadka-users-ms
+    repository: ghcr.io/brighterbg/brighter-users-ms
     tag: latest
     pullPolicy: IfNotPresent
   service:
@@ -36,8 +36,8 @@ users-ms:
   config:
     logLevel: INFO
     accessTokenExpireMinutes: "120"
-    redisUrl: redis://ploshtadka-redis-master:6379/0
-    contactEmail: ploshtadka.bg@gmail.com
+    redisUrl: redis://brighter-redis-master:6379/0
+    contactEmail: brighter.bg@gmail.com
     notificationsMsUrl: http://notifications-ms:8004
     frontendBaseUrl: https://xn--80aalycsf6f.xn--90ae
   secrets:
@@ -55,10 +55,10 @@ users-ms:
     maxReplicas: 5
     targetCPUUtilizationPercentage: 70
 
-venues-ms:
+properties-ms:
   replicaCount: 1
   image:
-    repository: ghcr.io/ploshtadkabg/ploshtadka-venues-ms
+    repository: ghcr.io/brighterbg/brighter-properties-ms
     tag: latest
     pullPolicy: IfNotPresent
   service:
@@ -81,7 +81,7 @@ venues-ms:
 bookings-ms:
   replicaCount: 1
   image:
-    repository: ghcr.io/ploshtadkabg/ploshtadka-bookings-ms
+    repository: ghcr.io/brighterbg/brighter-bookings-ms
     tag: latest
     pullPolicy: IfNotPresent
   service:
@@ -89,9 +89,9 @@ bookings-ms:
   config:
     logLevel: INFO
     usersMsUrl: http://users-ms:8000
-    venuesMsUrl: http://venues-ms:8001
+    propertiesMsUrl: http://properties-ms:8001
     paymentsMsUrl: http://payments-ms:8003
-    redisUrl: redis://ploshtadka-redis-master:6379/0
+    redisUrl: redis://brighter-redis-master:6379/0
   resources:
     requests:
       memory: 128Mi
@@ -107,7 +107,7 @@ bookings-ms:
 payments-ms:
   replicaCount: 1
   image:
-    repository: ghcr.io/ploshtadkabg/ploshtadka-payments-ms
+    repository: ghcr.io/brighterbg/brighter-payments-ms
     tag: latest
     pullPolicy: IfNotPresent
   service:
@@ -135,7 +135,7 @@ payments-ms:
 notifications-ms:
   replicaCount: 1
   image:
-    repository: ghcr.io/ploshtadkabg/ploshtadka-notifications-ms
+    repository: ghcr.io/brighterbg/brighter-notifications-ms
     tag: latest
     pullPolicy: IfNotPresent
   service:
@@ -162,7 +162,7 @@ notifications-ms:
 frontend:
   replicaCount: 1
   image:
-    repository: ghcr.io/ploshtadkabg/ploshtadka-frontend
+    repository: ghcr.io/brighterbg/brighter-frontend
     tag: latest
     pullPolicy: IfNotPresent
   service:
@@ -182,7 +182,7 @@ frontend:
 admin-panel:
   replicaCount: 1
   image:
-    repository: ghcr.io/ploshtadkabg/ploshtadka-admin-panel
+    repository: ghcr.io/brighterbg/brighter-admin-panel
     tag: latest
     pullPolicy: IfNotPresent
   service:

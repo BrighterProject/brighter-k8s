@@ -1,13 +1,13 @@
 replicaCount: 1
 image:
-  repository: ghcr.io/ploshtadkabg/ploshtadka-notifications-ms
+  repository: ghcr.io/brighterbg/brighter-notifications-ms
   tag: latest
   pullPolicy: IfNotPresent
 service:
   port: 8004
 config:
   logLevel: INFO
-  frontendBaseUrl: http://ploshtadka.bg
+  frontendBaseUrl: http://brighter.bg
 secrets:
   # provides RESEND_API_KEY
   name: notifications-ms-secrets
@@ -24,7 +24,7 @@ hpa:
   targetCPUUtilizationPercentage: 70
 global:
   domain: xn--80aalycsf6f.xn--90ae
-  dbSecretName: ploshtadka-db-app
+  dbSecretName: brighter-db-app
   entryPoint: web
   tls:
     enabled: false

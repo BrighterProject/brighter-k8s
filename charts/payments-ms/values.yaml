@@ -1,14 +1,14 @@
 replicaCount: 1
 image:
-  repository: ghcr.io/ploshtadkabg/ploshtadka-payments-ms
+  repository: ghcr.io/brighterbg/brighter-payments-ms
   tag: latest
   pullPolicy: IfNotPresent
 service:
   port: 8003
 config:
   bookingsMsUrl: http://bookings-ms:8002
-  stripeSuccessUrl: http://ploshtadka.bg/bookings?payment=success
-  stripeCancelUrl: http://ploshtadka.bg/bookings?payment=cancelled
+  stripeSuccessUrl: http://brighter.bg/bookings?payment=success
+  stripeCancelUrl: http://brighter.bg/bookings?payment=cancelled
   stripeCheckoutExpiresMinutes: "30"
 secrets:
   name: payments-ms-secrets
@@ -25,4 +25,4 @@ hpa:
   targetCPUUtilizationPercentage: 70
 global:
   domain: xn--80aalycsf6f.xn--90ae
-  dbSecretName: ploshtadka-db-app
+  dbSecretName: brighter-db-app

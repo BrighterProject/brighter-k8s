@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: venues-ms
+  name: properties-ms
   labels:
-    {{- include "venues-ms.labels" . | nindent 4 }}
+    {{- include "properties-ms.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   selector:
-    {{- include "venues-ms.selectorLabels" . | nindent 4 }}
+    {{- include "properties-ms.selectorLabels" . | nindent 4 }}
   ports:
     - name: http
       port: {{ .Values.service.port }}

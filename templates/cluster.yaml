@@ -2,16 +2,16 @@
 # first. The operator is installed as a Helm dependency in Chart.yaml.
 #
 # CloudNativePG automatically creates the secret "{{ .Values.global.dbSecretName }}"
-# (ploshtadka-db-app by default) containing the key "uri" with the full
+# (brighter-db-app by default) containing the key "uri" with the full
 # postgresql:// connection string. All backend service deployments reference this.
 #
 # Services connect via the "-rw" endpoint (read-write, always the primary):
-#   postgresql://ploshtadka:<pass>@ploshtadka-db-rw:5432/ploshtadka
+#   postgresql://brighter:<pass>@brighter-db-rw:5432/brighter
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: ploshtadka-db
+  name: brighter-db
   labels:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
@@ -24,12 +24,12 @@ spec:
 
   bootstrap:
     initdb:
-      database: ploshtadka
+      database: brighter
       owner: app
       # Sealed secret providing username + password for the DB owner.
       # Create with:
-      #   kubectl create secret generic ploshtadka-db-credentials \
-      #     --from-literal=username=ploshtadka \
+      #   kubectl create secret generic brighter-db-credentials \
+      #     --from-literal=username=brighter \
       #     --from-literal=password=<your-password> \
       #     --dry-run=client -o yaml | kubeseal > sealed-secrets/db-credentials.yaml
       secret:

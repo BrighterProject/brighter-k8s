@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # prerequisites.sh — install Traefik and CloudNativePG as standalone releases.
 #
-# Run this ONCE per cluster before `helm install ploshtadka`.
+# Run this ONCE per cluster before `helm install brighter`.
 # These two install CRDs that the main chart depends on; they must be registered
 # in the cluster before the application manifests are rendered.
 #
@@ -73,4 +73,4 @@ kubectl wait --for condition=established --timeout=60s \
 echo ""
 echo "Prerequisites installed. Next:"
 echo "  kubectl apply -f sealed-secrets/"
-echo "  helm install ploshtadka . -f values.yaml -f values.prod.yaml"
+echo "  helm install brighter . -f values.yaml -f values.prod.yaml"

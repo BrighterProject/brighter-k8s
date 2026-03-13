@@ -1,5 +1,0 @@
-apiVersion: v2
-name: venues-ms
-description: Venues microservice
-type: application
-version: 1.0.0

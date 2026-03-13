@@ -28,7 +28,7 @@ users-ms:
     minReplicas: 1
     maxReplicas: 4
 
-venues-ms:
+properties-ms:
   replicaCount: 1
   image:
     pullPolicy: Always
