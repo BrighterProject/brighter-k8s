@@ -23,6 +23,7 @@ users-ms:
     pullPolicy: Always
   config:
     logLevel: INFO
+    cookieSecure: "true"
   hpa:
     enabled: false
     minReplicas: 1

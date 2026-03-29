@@ -40,6 +40,7 @@ users-ms:
     contactEmail: brighter.bg@gmail.com
     notificationsMsUrl: http://notifications-ms:8004
     frontendBaseUrl: https://xn--80aalycsf6f.xn--90ae
+    cookieSecure: "false"
   secrets:
     # provides SECRET_KEY and GOOGLE_CLIENT_ID.
     name: users-ms-secrets

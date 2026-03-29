@@ -13,3 +13,4 @@ data:
   CONTACT_RATE_WINDOW: {{ .Values.config.contactRateWindow | quote }}
   NOTIFICATIONS_MS_URL: {{ .Values.config.notificationsMsUrl | quote }}
   FRONTEND_BASE_URL: {{ .Values.config.frontendBaseUrl | quote }}
+  COOKIE_SECURE: {{ .Values.config.cookieSecure | quote }}
