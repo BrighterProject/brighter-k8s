@@ -1,6 +1,6 @@
 # bookings-ms routing:
-# Priority 10 (public): OPTIONS preflight only — GET /bookings/slots requires auth (blocks scraping)
-# Priority 5 (protected): all bookings endpoints require JWT
+# Priority 10 (public): OPTIONS preflight + GET /bookings/slots (rate limited 60/min per IP via slowapi)
+# Priority 5 (protected): all other bookings endpoints require JWT
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -12,7 +12,7 @@ spec:
   entryPoints:
     - {{ .Values.global.entryPoint | default "web" }}
   routes:
-    - match: "Host(`{{ .Values.global.domain }}`) && Method(`OPTIONS`) && PathPrefix(`/api/bookings`)"
+    - match: "Host(`{{ .Values.global.domain }}`) && ((Method(`OPTIONS`) && PathPrefix(`/api/bookings`)) || (Method(`GET`) && Path(`/api/bookings/slots`)))"
       priority: 10
       middlewares:
         - name: {{ include "bookings-ms.apiStripMiddleware" . }}
