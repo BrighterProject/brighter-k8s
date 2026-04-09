@@ -67,6 +67,7 @@ properties-ms:
   config:
     logLevel: INFO
     usersMsUrl: http://users-ms:8000
+    bookingsMsUrl: http://bookings-ms:8002
   resources:
     requests:
       memory: 128Mi
