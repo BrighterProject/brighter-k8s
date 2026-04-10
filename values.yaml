@@ -39,7 +39,6 @@ users-ms:
     redisUrl: redis://brighter-redis-master:6379/0
     contactEmail: brighter.bg@gmail.com
     notificationsMsUrl: http://notifications-ms:8004
-    frontendBaseUrl: https://xn--80aalycsf6f.xn--90ae
     cookieSecure: "false"
   secrets:
     # provides SECRET_KEY and GOOGLE_CLIENT_ID.
@@ -116,8 +115,6 @@ payments-ms:
     port: 8003
   config:
     bookingsMsUrl: http://bookings-ms:8002
-    stripeSuccessUrl: http://xn--80aalycsf6f.xn--90ae/bookings?payment=success
-    stripeCancelUrl: http://xn--80aalycsf6f.xn--90ae/bookings?payment=cancelled
     stripeCheckoutExpiresMinutes: "30"
   secrets:
     # provides STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET
@@ -144,7 +141,6 @@ notifications-ms:
     port: 8004
   config:
     logLevel: INFO
-    frontendBaseUrl: http://xn--80aalycsf6f.xn--90ae
     fromEmail: 'Ploshtadka.BG <noreply@xn--80aalycsf6f.xn--90ae>'
   secrets:
     # provides RESEND_API_KEY

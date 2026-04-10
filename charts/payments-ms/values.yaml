@@ -7,8 +7,8 @@ service:
   port: 8003
 config:
   bookingsMsUrl: http://bookings-ms:8002
-  stripeSuccessUrl: http://brighter.bg/bookings?payment=success
-  stripeCancelUrl: http://brighter.bg/bookings?payment=cancelled
+  stripeSuccessUrl: ""  # derived from global.domain at render time
+  stripeCancelUrl: ""   # derived from global.domain at render time
   stripeCheckoutExpiresMinutes: "30"
 secrets:
   name: payments-ms-secrets

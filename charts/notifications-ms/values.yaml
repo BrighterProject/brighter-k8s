@@ -7,7 +7,7 @@ service:
   port: 8004
 config:
   logLevel: INFO
-  frontendBaseUrl: http://brighter.bg
+  frontendBaseUrl: ""  # derived from global.domain at render time
 secrets:
   # provides RESEND_API_KEY
   name: notifications-ms-secrets

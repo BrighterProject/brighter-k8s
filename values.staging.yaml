@@ -7,6 +7,12 @@ postgresql:
   storage:
     size: 5Gi
 
+redis:
+  master:
+    persistence:
+      enabled: true
+      size: 512Mi
+
 users-ms:
   replicaCount: 1
   config:

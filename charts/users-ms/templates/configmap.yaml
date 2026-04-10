@@ -12,5 +12,6 @@ data:
   CONTACT_RATE_LIMIT: {{ .Values.config.contactRateLimit | quote }}
   CONTACT_RATE_WINDOW: {{ .Values.config.contactRateWindow | quote }}
   NOTIFICATIONS_MS_URL: {{ .Values.config.notificationsMsUrl | quote }}
-  FRONTEND_BASE_URL: {{ .Values.config.frontendBaseUrl | quote }}
+  {{- $scheme := ternary "https" "http" .Values.global.tls.enabled }}
+  FRONTEND_BASE_URL: {{ .Values.config.frontendBaseUrl | default (printf "%s://%s" $scheme .Values.global.domain) | quote }}
   COOKIE_SECURE: {{ .Values.config.cookieSecure | quote }}

@@ -6,6 +6,8 @@ metadata:
     {{- include "payments-ms.labels" . | nindent 4 }}
 data:
   BOOKINGS_MS_URL: {{ .Values.config.bookingsMsUrl | quote }}
-  STRIPE_SUCCESS_URL: {{ .Values.config.stripeSuccessUrl | quote }}
-  STRIPE_CANCEL_URL: {{ .Values.config.stripeCancelUrl | quote }}
+  {{- $scheme := ternary "https" "http" .Values.global.tls.enabled }}
+  {{- $baseUrl := printf "%s://%s" $scheme .Values.global.domain }}
+  STRIPE_SUCCESS_URL: {{ .Values.config.stripeSuccessUrl | default (printf "%s/bookings?payment=success" $baseUrl) | quote }}
+  STRIPE_CANCEL_URL: {{ .Values.config.stripeCancelUrl | default (printf "%s/bookings?payment=cancelled" $baseUrl) | quote }}
   STRIPE_CHECKOUT_EXPIRES_MINUTES: {{ .Values.config.stripeCheckoutExpiresMinutes | quote }}
