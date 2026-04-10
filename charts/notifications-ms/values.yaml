@@ -1,6 +1,6 @@
 replicaCount: 1
 image:
-  repository: ghcr.io/brighterbg/brighter-notifications-ms
+  repository: ghcr.io/brighterproject/brighter-notifications-ms
   tag: latest
   pullPolicy: IfNotPresent
 service:
@@ -8,6 +8,7 @@ service:
 config:
   logLevel: INFO
   frontendBaseUrl: ""  # derived from global.domain at render time
+  redisUrl: redis://brighter-redis-master:6379/0
 secrets:
   # provides RESEND_API_KEY
   name: notifications-ms-secrets

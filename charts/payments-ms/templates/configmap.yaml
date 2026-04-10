@@ -11,3 +11,4 @@ data:
   STRIPE_SUCCESS_URL: {{ .Values.config.stripeSuccessUrl | default (printf "%s/bookings?payment=success" $baseUrl) | quote }}
   STRIPE_CANCEL_URL: {{ .Values.config.stripeCancelUrl | default (printf "%s/bookings?payment=cancelled" $baseUrl) | quote }}
   STRIPE_CHECKOUT_EXPIRES_MINUTES: {{ .Values.config.stripeCheckoutExpiresMinutes | quote }}
+  REDIS_URL: {{ .Values.config.redisUrl | quote }}

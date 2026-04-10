@@ -1,6 +1,6 @@
 replicaCount: 1
 image:
-  repository: ghcr.io/brighterbg/brighter-payments-ms
+  repository: ghcr.io/brighterproject/brighter-payments-ms
   tag: latest
   pullPolicy: IfNotPresent
 service:
@@ -10,6 +10,7 @@ config:
   stripeSuccessUrl: ""  # derived from global.domain at render time
   stripeCancelUrl: ""   # derived from global.domain at render time
   stripeCheckoutExpiresMinutes: "30"
+  redisUrl: redis://brighter-redis-master:6379/0
 secrets:
   name: payments-ms-secrets
 resources:

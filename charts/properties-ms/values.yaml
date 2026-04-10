@@ -8,6 +8,7 @@ service:
 config:
   logLevel: INFO
   usersMsUrl: http://users-ms:8000
+  redisUrl: redis://brighter-redis-master:6379/0
 resources:
   requests:
     memory: 128Mi

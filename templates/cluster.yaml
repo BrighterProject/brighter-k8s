@@ -25,7 +25,7 @@ spec:
   bootstrap:
     initdb:
       database: brighter
-      owner: app
+      owner: brighter
       # Sealed secret providing username + password for the DB owner.
       # Create with:
       #   kubectl create secret generic brighter-db-credentials \

@@ -88,12 +88,12 @@ kubectl create secret generic payments-ms-secrets \
 ```bash
 eval $(minikube docker-env)
 
-docker build -t ghcr.io/brighterbg/brighter-users-ms:latest    ./brighter-users-ms
-docker build -t ghcr.io/brighterbg/brighter-properties-ms:latest   ./brighter-properties-ms
-docker build -t ghcr.io/brighterbg/brighter-bookings-ms:latest ./brighter-bookings-ms
-docker build -t ghcr.io/brighterbg/brighter-payments-ms:latest ./brighter-payments-ms
-docker build -t ghcr.io/brighterbg/brighter-frontend:latest    ./brighter-frontend
-docker build -t ghcr.io/brighterbg/brighter-admin-panel:latest ./brighter-admin-panel
+docker build -t ghcr.io/brighterproject/brighter-users-ms:latest    ./brighter-users-ms
+docker build -t ghcr.io/brighterproject/brighter-properties-ms:latest   ./brighter-properties-ms
+docker build -t ghcr.io/brighterproject/brighter-bookings-ms:latest ./brighter-bookings-ms
+docker build -t ghcr.io/brighterproject/brighter-payments-ms:latest ./brighter-payments-ms
+docker build -t ghcr.io/brighterproject/brighter-frontend:latest    ./brighter-frontend
+docker build -t ghcr.io/brighterproject/brighter-admin-panel:latest ./brighter-admin-panel
 ```
 
 ### 5. Install the chart
@@ -119,7 +119,7 @@ kubectl port-forward svc/admin-panel 5173:3000
 
 ```bash
 eval $(minikube docker-env)
-docker build -t ghcr.io/brighterbg/brighter-users-ms:latest ./brighter-users-ms
+docker build -t ghcr.io/brighterproject/brighter-users-ms:latest ./brighter-users-ms
 kubectl rollout restart deployment brighter-users-ms
 ```
 
@@ -187,7 +187,7 @@ dig +short brighter.bg   # must return <server-ip> before proceeding
 
 ### 5. Push images via CI
 
-The GitHub Actions workflows in each service repo (`.github/workflows/ci.yml`) build and push to `ghcr.io/brighterbg/<service>` automatically on every merge to `main`.
+The GitHub Actions workflows in each service repo (`.github/workflows/ci.yml`) build and push to `ghcr.io/brighterproject/<service>` automatically on every merge to `main`.
 
 **One-time setup per repo** — add this GitHub Actions secret in each service repo that needs it:
 

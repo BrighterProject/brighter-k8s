@@ -28,7 +28,7 @@ postgresql:
 users-ms:
   replicaCount: 1
   image:
-    repository: ghcr.io/brighterbg/brighter-users-ms
+    repository: ghcr.io/brighterproject/brighter-users-ms
     tag: latest
     pullPolicy: IfNotPresent
   service:
@@ -58,7 +58,7 @@ users-ms:
 properties-ms:
   replicaCount: 1
   image:
-    repository: ghcr.io/brighterbg/brighter-properties-ms
+    repository: ghcr.io/brighterproject/brighter-properties-ms
     tag: latest
     pullPolicy: IfNotPresent
   service:
@@ -82,7 +82,7 @@ properties-ms:
 bookings-ms:
   replicaCount: 1
   image:
-    repository: ghcr.io/brighterbg/brighter-bookings-ms
+    repository: ghcr.io/brighterproject/brighter-bookings-ms
     tag: latest
     pullPolicy: IfNotPresent
   service:
@@ -108,7 +108,7 @@ bookings-ms:
 payments-ms:
   replicaCount: 1
   image:
-    repository: ghcr.io/brighterbg/brighter-payments-ms
+    repository: ghcr.io/brighterproject/brighter-payments-ms
     tag: latest
     pullPolicy: IfNotPresent
   service:
@@ -134,7 +134,7 @@ payments-ms:
 notifications-ms:
   replicaCount: 1
   image:
-    repository: ghcr.io/brighterbg/brighter-notifications-ms
+    repository: ghcr.io/brighterproject/brighter-notifications-ms
     tag: latest
     pullPolicy: IfNotPresent
   service:
@@ -160,7 +160,7 @@ notifications-ms:
 frontend:
   replicaCount: 1
   image:
-    repository: ghcr.io/brighterbg/brighter-frontend
+    repository: ghcr.io/brighterproject/brighter-frontend
     tag: latest
     pullPolicy: IfNotPresent
   service:
@@ -180,7 +180,7 @@ frontend:
 admin-panel:
   replicaCount: 1
   image:
-    repository: ghcr.io/brighterbg/brighter-admin-panel
+    repository: ghcr.io/brighterproject/brighter-admin-panel
     tag: latest
     pullPolicy: IfNotPresent
   service:
