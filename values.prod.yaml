@@ -1,4 +1,4 @@
-# Production overrides — HA PostgreSQL, HPA enabled, production URLs
+# Production overrides — TLS, resource limits, Redis persistence
 global:
   domain: xn--80aalycsf6f.xn--90ae
   entryPoint: websecure
@@ -16,6 +16,13 @@ redis:
     persistence:
       enabled: true       # persist Redis AOF in prod
       size: 2Gi
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 50m
+      limits:
+        memory: 128Mi
+        cpu: 200m
 
 users-ms:
   replicaCount: 1
@@ -24,57 +31,82 @@ users-ms:
   config:
     logLevel: INFO
     cookieSecure: "true"
-  hpa:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 4
+  resources:
+    requests:
+      memory: 96Mi
+      cpu: 75m
+    limits:
+      memory: 192Mi
+      cpu: 300m
 
 properties-ms:
   replicaCount: 1
   image:
     pullPolicy: Always
-  hpa:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 4
+  resources:
+    requests:
+      memory: 96Mi
+      cpu: 75m
+    limits:
+      memory: 192Mi
+      cpu: 250m
 
 bookings-ms:
   replicaCount: 1
   image:
     pullPolicy: Always
-  hpa:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 4
+  resources:
+    requests:
+      memory: 96Mi
+      cpu: 75m
+    limits:
+      memory: 192Mi
+      cpu: 250m
 
 payments-ms:
   replicaCount: 1
   image:
     pullPolicy: Always
-  hpa:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 2
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 50m
+    limits:
+      memory: 128Mi
+      cpu: 200m
 
 notifications-ms:
   replicaCount: 1
   image:
     pullPolicy: Always
-  hpa:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 2
+  resources:
+    requests:
+      memory: 48Mi
+      cpu: 25m
+    limits:
+      memory: 96Mi
+      cpu: 100m
 
 frontend:
   replicaCount: 1
   image:
     pullPolicy: Always
-  hpa:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 3
+  resources:
+    requests:
+      memory: 96Mi
+      cpu: 75m
+    limits:
+      memory: 192Mi
+      cpu: 300m
 
 admin-panel:
   replicaCount: 1
   image:
     pullPolicy: Always
+  resources:
+    requests:
+      memory: 32Mi
+      cpu: 20m
+    limits:
+      memory: 64Mi
+      cpu: 100m
