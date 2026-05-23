@@ -62,9 +62,10 @@ Traefik and CloudNativePG are NOT chart dependencies — they install CRDs that 
 |---|---|---|
 | `brighter-db-credentials` | Manual | `username`, `password` |
 | `brighter-db-app` | CloudNativePG | `uri` — **must use `asyncpg://` scheme, not `postgresql://`** |
-| `users-ms-secrets` | seal.sh | `SECRET_KEY`, `GOOGLE_CLIENT_ID` |
-| `payments-ms-secrets` | seal.sh | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` |
+| `users-ms-secrets` | seal.sh | `SECRET_KEY`, `GOOGLE_CLIENT_ID`, `SMTP_USER`, `SMTP_PASSWORD`, `TURNSTILE_SECRET_KEY` |
+| `payments-ms-secrets` | seal.sh | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_CONNECT_WEBHOOK_SECRET`, `INTERNAL_API_KEY` |
 | `notifications-ms-secrets` | seal.sh | `RESEND_API_KEY` |
+| `properties-ms-secrets` | seal.sh | `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` |
 
 ## Gotchas
 

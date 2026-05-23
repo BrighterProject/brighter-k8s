@@ -1,10 +1,11 @@
 # Production overrides — TLS, resource limits, Redis persistence
 global:
   domain: xn--80aalycsf6f.xn--90ae
-  entryPoint: websecure
+  # TLS is terminated by Caddy at the host level; Traefik receives plain HTTP
+  # on NodePort 30080 and trusts X-Forwarded-Proto: https from Caddy.
+  entryPoint: web
   tls:
-    enabled: true
-    certResolver: letsencrypt
+    enabled: false
 
 postgresql:
   instances: 1
@@ -81,11 +82,11 @@ notifications-ms:
     pullPolicy: Always
   resources:
     requests:
-      memory: 48Mi
-      cpu: 25m
+      memory: 128Mi
+      cpu: 50m
     limits:
-      memory: 96Mi
-      cpu: 100m
+      memory: 256Mi
+      cpu: 200m
 
 frontend:
   replicaCount: 1

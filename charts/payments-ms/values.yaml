@@ -7,9 +7,20 @@ service:
   port: 8003
 config:
   bookingsMsUrl: http://bookings-ms:8002
-  stripeSuccessUrl: ""  # derived from global.domain at render time
-  stripeCancelUrl: ""   # derived from global.domain at render time
+  notificationsMsUrl: http://notifications-ms:8004
+  propertiesMsUrl: http://properties-ms:8001
+  usersMsUrl: http://users-ms:8000
+  stripeSuccessUrl: ""           # derived from global.domain at render time
+  stripeCancelUrl: ""            # derived from global.domain at render time
   stripeCheckoutExpiresMinutes: "30"
+  stripeConnectRefreshUri: ""    # derived from global.domain at render time
+  stripeConnectSuccessUrl: ""    # derived from global.domain at render time
+  stripePlatformFeePercent: "10.0"
+  stripeProcessingFeePct: "1.5"
+  stripeProcessingFeeFixedEurCents: "25"
+  stripeSubscriptionSuccessUrl: ""  # derived from global.domain at render time
+  stripeSubscriptionCancelUrl: ""   # derived from global.domain at render time
+  stripePortalReturnUrl: ""         # derived from global.domain at render time
   redisUrl: redis://brighter-redis-master:6379/0
 secrets:
   name: payments-ms-secrets

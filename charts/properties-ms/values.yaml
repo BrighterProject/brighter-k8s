@@ -1,6 +1,6 @@
 replicaCount: 1
 image:
-  repository: ghcr.io/brighterbg/brighter-properties-ms
+  repository: ghcr.io/brighterproject/brighter-properties-ms
   tag: latest
   pullPolicy: IfNotPresent
 service:
@@ -8,7 +8,17 @@ service:
 config:
   logLevel: INFO
   usersMsUrl: http://users-ms:8000
+  bookingsMsUrl: http://bookings-ms:8002
+  notificationsMsUrl: http://notifications-ms:8004
+  paymentsMsUrl: http://payments-ms:8003
   redisUrl: redis://brighter-redis-master:6379/0
+  r2AccountId: ""
+  r2BucketName: ""
+  r2PublicUrl: ""
+
+secrets:
+  # provides R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY
+  name: properties-ms-secrets
 resources:
   requests:
     memory: 128Mi

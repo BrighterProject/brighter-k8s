@@ -32,6 +32,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "properties-ms.fullname" . }}-config
+            - secretRef:
+                name: {{ .Values.secrets.name }}
           env:
             - name: DB_URL
               valueFrom:

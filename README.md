@@ -31,11 +31,11 @@ scripts/
 Install once per cluster before the first `helm install`:
 
 ```bash
-# Local (no TLS)
+# Local (no TLS, Minikube)
 ./scripts/prerequisites.sh
 
-# Production (with Let's Encrypt)
-ACME_EMAIL=you@example.com ./scripts/prerequisites.sh
+# Production (NodePort :30080, TLS handled by Caddy at host level)
+PRODUCTION=1 ./scripts/prerequisites.sh
 ```
 
 This installs:
@@ -138,7 +138,7 @@ kubectl rollout restart deployment brighter-users-ms
 
 Good options: **Hetzner CX32** (~€14/mo), DigitalOcean, Vultr.
 
-Firewall: open ports **22** (SSH), **80** (HTTP / ACME challenge), **443** (HTTPS).
+Firewall: open ports **22** (SSH), **80** (HTTP), **443** (HTTPS). Port **30080** must NOT be exposed — it is internal, only reachable from Caddy on the same host.
 
 ### 2. Install k3s
 
@@ -211,9 +211,9 @@ Set each package visibility to **Public**, or create an image pull secret if you
 kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/latest/download/controller.yaml
 kubectl -n kube-system rollout status deploy/sealed-secrets-controller
 
-# Install Traefik (with ACME) + CloudNativePG operator
+# Install Traefik (NodePort :30080) + CloudNativePG operator
 cd brighter-k8s
-ACME_EMAIL=you@example.com ./scripts/prerequisites.sh
+PRODUCTION=1 ./scripts/prerequisites.sh
 ```
 
 ### 7. Seal production secrets
@@ -266,17 +266,33 @@ helm install brighter . \
 kubectl get pods -w   # watch everything come up
 ```
 
-### 9. Verify
+### 9. Configure Caddy (host-level proxy)
+
+Caddy handles TLS for the k8s domain and proxies plain HTTP to Traefik on port 30080.
+Add this block to `/etc/caddy/Caddyfile` on the server:
+
+```caddyfile
+yourdomain.com {
+    reverse_proxy localhost:30080 {
+        header_up X-Forwarded-Proto https
+        header_up X-Forwarded-For {remote_host}
+    }
+}
+```
+
+Then reload: `systemctl reload caddy`
+
+### 10. Verify
 
 ```bash
-# TLS certificate is issued within ~60 seconds of first request
-curl -I https://brighter.bg/api/properties/
-# Expected: HTTP/2 200, valid Let's Encrypt certificate
+# Caddy issues TLS certificate automatically on first request
+curl -I https://yourdomain.com/api/properties/
+# Expected: HTTP/2 200, valid Let's Encrypt certificate (issued by Caddy)
 
-curl -I http://brighter.bg/api/properties/
-# Expected: 301 redirect → https://
+curl -I http://yourdomain.com/api/properties/
+# Expected: 301 redirect → https:// (Caddy handles the redirect)
 
-curl -s https://brighter.bg/api/bookings/ -w "\nstatus: %{http_code}\n"
+curl -s https://yourdomain.com/api/bookings/ -w "\nstatus: %{http_code}\n"
 # Expected: 401 (forwardAuth is working)
 ```
 

@@ -38,10 +38,14 @@ users-ms:
     accessTokenExpireMinutes: "120"
     redisUrl: redis://brighter-redis-master:6379/0
     contactEmail: brighter.bg@gmail.com
+    contactRateLimit: "5"
+    contactRateWindow: "3600"
+    smtpHost: smtp.gmail.com
+    smtpPort: "587"
     notificationsMsUrl: http://notifications-ms:8004
     cookieSecure: "false"
   secrets:
-    # provides SECRET_KEY and GOOGLE_CLIENT_ID.
+    # provides SECRET_KEY, GOOGLE_CLIENT_ID, SMTP_USER, SMTP_PASSWORD, TURNSTILE_SECRET_KEY
     name: users-ms-secrets
   resources:
     requests:
@@ -67,6 +71,15 @@ properties-ms:
     logLevel: INFO
     usersMsUrl: http://users-ms:8000
     bookingsMsUrl: http://bookings-ms:8002
+    notificationsMsUrl: http://notifications-ms:8004
+    paymentsMsUrl: http://payments-ms:8003
+    redisUrl: redis://brighter-redis-master:6379/0
+    r2AccountId: ""
+    r2BucketName: ""
+    r2PublicUrl: ""
+  secrets:
+    # provides R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY
+    name: properties-ms-secrets
   resources:
     requests:
       memory: 128Mi
@@ -92,6 +105,7 @@ bookings-ms:
     usersMsUrl: http://users-ms:8000
     propertiesMsUrl: http://properties-ms:8001
     paymentsMsUrl: http://payments-ms:8003
+    notificationsMsUrl: http://notifications-ms:8004
     redisUrl: redis://brighter-redis-master:6379/0
   resources:
     requests:
@@ -115,9 +129,21 @@ payments-ms:
     port: 8003
   config:
     bookingsMsUrl: http://bookings-ms:8002
+    notificationsMsUrl: http://notifications-ms:8004
+    propertiesMsUrl: http://properties-ms:8001
+    usersMsUrl: http://users-ms:8000
     stripeCheckoutExpiresMinutes: "30"
+    stripeConnectRefreshUri: ""      # derived from global.domain at render time
+    stripeConnectSuccessUrl: ""      # derived from global.domain at render time
+    stripePlatformFeePercent: "10.0"
+    stripeProcessingFeePct: "1.5"
+    stripeProcessingFeeFixedEurCents: "25"
+    stripeSubscriptionSuccessUrl: "" # derived from global.domain at render time
+    stripeSubscriptionCancelUrl: ""  # derived from global.domain at render time
+    stripePortalReturnUrl: ""        # derived from global.domain at render time
+    redisUrl: redis://brighter-redis-master:6379/0
   secrets:
-    # provides STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET
+    # provides STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_CONNECT_WEBHOOK_SECRET, INTERNAL_API_KEY
     name: payments-ms-secrets
   resources:
     requests:

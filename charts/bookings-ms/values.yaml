@@ -10,6 +10,7 @@ config:
   usersMsUrl: http://users-ms:8000
   propertiesMsUrl: http://properties-ms:8001
   paymentsMsUrl: http://payments-ms:8003
+  notificationsMsUrl: http://notifications-ms:8004
   redisUrl: redis://brighter-redis-master:6379/0
 resources:
   requests:

@@ -9,4 +9,5 @@ data:
   USERS_MS_URL: {{ .Values.config.usersMsUrl | quote }}
   PROPERTIES_MS_URL: {{ .Values.config.propertiesMsUrl | quote }}
   PAYMENTS_MS_URL: {{ .Values.config.paymentsMsUrl | quote }}
+  NOTIFICATIONS_MS_URL: {{ .Values.config.notificationsMsUrl | quote }}
   REDIS_URL: {{ .Values.config.redisUrl | quote }}
