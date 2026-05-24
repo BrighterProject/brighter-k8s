@@ -14,3 +14,5 @@ data:
   R2_ACCOUNT_ID: {{ .Values.config.r2AccountId | quote }}
   R2_BUCKET_NAME: {{ .Values.config.r2BucketName | quote }}
   R2_PUBLIC_URL: {{ .Values.config.r2PublicUrl | quote }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.config.otelExporterOtlpEndpoint | quote }}
+  OTEL_SDK_DISABLED: {{ .Values.config.otelSdkDisabled | quote }}

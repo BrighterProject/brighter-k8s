@@ -11,3 +11,5 @@ data:
   PAYMENTS_MS_URL: {{ .Values.config.paymentsMsUrl | quote }}
   NOTIFICATIONS_MS_URL: {{ .Values.config.notificationsMsUrl | quote }}
   REDIS_URL: {{ .Values.config.redisUrl | quote }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.config.otelExporterOtlpEndpoint | quote }}
+  OTEL_SDK_DISABLED: {{ .Values.config.otelSdkDisabled | quote }}

@@ -23,3 +23,5 @@ data:
   STRIPE_SUBSCRIPTION_CANCEL_URL: {{ .Values.config.stripeSubscriptionCancelUrl | default (printf "%s/{locale}/pricing" $baseUrl) | quote }}
   STRIPE_PORTAL_RETURN_URL: {{ .Values.config.stripePortalReturnUrl | default (printf "%s/{locale}/pricing" $baseUrl) | quote }}
   REDIS_URL: {{ .Values.config.redisUrl | quote }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.config.otelExporterOtlpEndpoint | quote }}
+  OTEL_SDK_DISABLED: {{ .Values.config.otelSdkDisabled | quote }}

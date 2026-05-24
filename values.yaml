@@ -44,6 +44,8 @@ users-ms:
     smtpPort: "587"
     notificationsMsUrl: http://notifications-ms:8004
     cookieSecure: "false"
+    otelExporterOtlpEndpoint: "http://otel-collector:4317"
+    otelSdkDisabled: "false"
   secrets:
     # provides SECRET_KEY, GOOGLE_CLIENT_ID, SMTP_USER, SMTP_PASSWORD, TURNSTILE_SECRET_KEY
     name: users-ms-secrets
@@ -77,6 +79,8 @@ properties-ms:
     r2AccountId: ""
     r2BucketName: ""
     r2PublicUrl: ""
+    otelExporterOtlpEndpoint: "http://otel-collector:4317"
+    otelSdkDisabled: "false"
   secrets:
     # provides R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY
     name: properties-ms-secrets
@@ -107,6 +111,8 @@ bookings-ms:
     paymentsMsUrl: http://payments-ms:8003
     notificationsMsUrl: http://notifications-ms:8004
     redisUrl: redis://brighter-redis-master:6379/0
+    otelExporterOtlpEndpoint: "http://otel-collector:4317"
+    otelSdkDisabled: "false"
   resources:
     requests:
       memory: 128Mi
@@ -142,6 +148,8 @@ payments-ms:
     stripeSubscriptionCancelUrl: ""  # derived from global.domain at render time
     stripePortalReturnUrl: ""        # derived from global.domain at render time
     redisUrl: redis://brighter-redis-master:6379/0
+    otelExporterOtlpEndpoint: "http://otel-collector:4317"
+    otelSdkDisabled: "false"
   secrets:
     # provides STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_CONNECT_WEBHOOK_SECRET, INTERNAL_API_KEY
     name: payments-ms-secrets
@@ -168,6 +176,8 @@ notifications-ms:
   config:
     logLevel: INFO
     fromEmail: 'Ploshtadka.BG <noreply@xn--80aalycsf6f.xn--90ae>'
+    otelExporterOtlpEndpoint: "http://otel-collector:4317"
+    otelSdkDisabled: "false"
   secrets:
     # provides RESEND_API_KEY
     name: notifications-ms-secrets
@@ -219,5 +229,5 @@ admin-panel:
       memory: 128Mi
 
 observability:
-  enabled: false
+  enabled: true
   tempoEndpoint: http://tempo:3200
