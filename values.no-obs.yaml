@@ -1,0 +1,23 @@
+# Apply with: helm upgrade brighter . -f values.yaml -f values.no-obs.yaml
+observability:
+  enabled: false
+
+users-ms:
+  env:
+    OTEL_SDK_DISABLED: "true"
+
+properties-ms:
+  env:
+    OTEL_SDK_DISABLED: "true"
+
+bookings-ms:
+  env:
+    OTEL_SDK_DISABLED: "true"
+
+payments-ms:
+  env:
+    OTEL_SDK_DISABLED: "true"
+
+notifications-ms:
+  env:
+    OTEL_SDK_DISABLED: "true"
