@@ -217,3 +217,7 @@ admin-panel:
       cpu: 50m
     limits:
       memory: 128Mi
+
+observability:
+  enabled: false
+  tempoEndpoint: http://tempo:3200
