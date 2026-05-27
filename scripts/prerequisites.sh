@@ -43,6 +43,7 @@ else
   helm upgrade --install traefik traefik/traefik \
     --namespace traefik \
     --create-namespace \
+    --set service.type=NodePort \
     --set ports.web.expose.default=true \
     --set ingressRoute.dashboard.enabled=false \
     --set providers.kubernetesCRD.enabled=true \
