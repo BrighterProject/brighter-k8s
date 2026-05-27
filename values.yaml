@@ -134,6 +134,7 @@ payments-ms:
   service:
     port: 8003
   config:
+    logLevel: INFO
     bookingsMsUrl: http://bookings-ms:8002
     notificationsMsUrl: http://notifications-ms:8004
     propertiesMsUrl: http://properties-ms:8001

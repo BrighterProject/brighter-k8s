@@ -16,3 +16,4 @@ data:
   R2_PUBLIC_URL: {{ .Values.config.r2PublicUrl | quote }}
   OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.config.otelExporterOtlpEndpoint | quote }}
   OTEL_SDK_DISABLED: {{ .Values.config.otelSdkDisabled | quote }}
+  FORWARDED_ALLOW_IPS: "*"

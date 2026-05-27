@@ -5,6 +5,7 @@ metadata:
   labels:
     {{- include "payments-ms.labels" . | nindent 4 }}
 data:
+  LOG_LEVEL: {{ .Values.config.logLevel | quote }}
   BOOKINGS_MS_URL: {{ .Values.config.bookingsMsUrl | quote }}
   NOTIFICATIONS_MS_URL: {{ .Values.config.notificationsMsUrl | quote }}
   PROPERTIES_MS_URL: {{ .Values.config.propertiesMsUrl | quote }}
@@ -25,3 +26,4 @@ data:
   REDIS_URL: {{ .Values.config.redisUrl | quote }}
   OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.config.otelExporterOtlpEndpoint | quote }}
   OTEL_SDK_DISABLED: {{ .Values.config.otelSdkDisabled | quote }}
+  FORWARDED_ALLOW_IPS: "*"

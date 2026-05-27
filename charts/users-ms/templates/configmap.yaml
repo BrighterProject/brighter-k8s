@@ -19,3 +19,4 @@ data:
   COOKIE_SECURE: {{ .Values.config.cookieSecure | quote }}
   OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.config.otelExporterOtlpEndpoint | quote }}
   OTEL_SDK_DISABLED: {{ .Values.config.otelSdkDisabled | quote }}
+  FORWARDED_ALLOW_IPS: "*"
