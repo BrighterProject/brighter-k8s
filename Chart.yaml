@@ -10,6 +10,28 @@ dependencies:
     version: ">=20.0.0-0"
     repository: https://charts.bitnami.com/bitnami
 
+  # Observability stack — all gated by observability.enabled
+  - name: tempo
+    version: ">=1.7.0-0"
+    repository: https://grafana.github.io/helm-charts
+    condition: observability.enabled
+  - name: loki
+    version: ">=6.0.0-0"
+    repository: https://grafana.github.io/helm-charts
+    condition: observability.enabled
+  - name: promtail
+    version: ">=6.15.0-0"
+    repository: https://grafana.github.io/helm-charts
+    condition: observability.enabled
+  - name: grafana
+    version: ">=8.0.0-0"
+    repository: https://grafana.github.io/helm-charts
+    condition: observability.enabled
+  - name: prometheus
+    version: ">=25.0.0-0"
+    repository: https://prometheus-community.github.io/helm-charts
+    condition: observability.enabled
+
 # Traefik and CloudNativePG are NOT listed here because they install CRDs
 # that must exist before this chart's templates are rendered
 # (see scripts/prerequisites.sh)

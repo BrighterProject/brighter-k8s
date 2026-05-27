@@ -1,0 +1,10 @@
+{{- if .Values.observability.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: brighter-grafana-dashboards
+  namespace: {{ .Release.Namespace }}
+data:
+  brighter.json: |
+{{ .Files.Get "dashboards/brighter.json" | indent 4 }}
+{{- end }}

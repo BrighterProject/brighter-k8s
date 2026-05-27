@@ -5,7 +5,7 @@ Deploys the full BrighterProject stack to Kubernetes.
 ## Commands
 
 ```bash
-# Update Redis dependency
+# Update all dependencies (Redis + observability subcharts)
 helm dependency update
 
 # Local (Minikube — images built locally)
@@ -66,6 +66,17 @@ Traefik and CloudNativePG are NOT chart dependencies — they install CRDs that 
 | `payments-ms-secrets` | seal.sh | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_CONNECT_WEBHOOK_SECRET`, `INTERNAL_API_KEY` |
 | `notifications-ms-secrets` | seal.sh | `RESEND_API_KEY` |
 | `properties-ms-secrets` | seal.sh | `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` |
+| `grafana-admin-secret` | seal.sh | `admin-user`, `admin-password` |
+| `grafana-alerting-secrets` | seal.sh (optional) | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `GRAFANA_EXTERNAL_URL` |
+
+## Disable observability temporarily
+
+```bash
+helm upgrade brighter . -f values.yaml -f values.prod.yaml \
+  --set observability.enabled=false
+```
+
+Gates all subcharts (Tempo, Loki, Promtail, Prometheus, Grafana, OTEL Collector). App services keep running — the OTEL SDK will log a connection warning but requests are unaffected. Re-enable by upgrading without the override.
 
 ## Gotchas
 

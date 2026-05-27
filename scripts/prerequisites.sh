@@ -23,8 +23,9 @@ helm repo update traefik
 if [[ -n "$PRODUCTION" ]]; then
   # Production: Traefik binds NodePort 30080 only.
   # TLS is terminated by Caddy at the host level; Caddy proxies plain HTTP to
-  # localhost:30080. forwardedHeaders.insecure lets Traefik trust the
-  # X-Forwarded-Proto: https header Caddy injects.
+  # host.docker.internal:30080 (or localhost:30080 if Caddy runs on the host).
+  # forwardedHeaders.insecure lets Traefik trust the X-Forwarded-Proto: https
+  # header Caddy injects.
   echo "→ Installing Traefik (production, NodePort :30080 — TLS via Caddy)..."
   helm upgrade --install traefik traefik/traefik \
     --namespace traefik \
@@ -76,7 +77,7 @@ echo "  helm install brighter . -f values.yaml -f values.prod.yaml"
 echo ""
 echo "Caddy (host) config — add a block for the k8s domain:"
 echo "  yourdomain.com {"
-echo "    reverse_proxy localhost:30080 {"
+echo "    reverse_proxy host.docker.internal:30080 {"
 echo "      header_up X-Forwarded-Proto https"
 echo "      header_up X-Forwarded-For {remote_host}"
 echo "    }"

@@ -37,17 +37,19 @@ users-ms:
     logLevel: INFO
     accessTokenExpireMinutes: "120"
     redisUrl: redis://brighter-redis-master:6379/0
-    contactEmail: brighter.bg@gmail.com
+    contactEmail: ploshtadka.bg@gmail.com
     contactRateLimit: "5"
     contactRateWindow: "3600"
+    googleClientId: "347686290554-c9b0dj5fpusmicbr2a1rhc41qm2a0in5.apps.googleusercontent.com"
     smtpHost: smtp.gmail.com
     smtpPort: "587"
+    smtpUser: ploshtadka.bg@gmail.com
     notificationsMsUrl: http://notifications-ms:8004
     cookieSecure: "false"
     otelExporterOtlpEndpoint: "http://otel-collector:4317"
     otelSdkDisabled: "false"
   secrets:
-    # provides SECRET_KEY, GOOGLE_CLIENT_ID, SMTP_USER, SMTP_PASSWORD, TURNSTILE_SECRET_KEY
+    # provides SECRET_KEY, SMTP_PASSWORD, TURNSTILE_SECRET_KEY
     name: users-ms-secrets
   resources:
     requests:
@@ -76,9 +78,9 @@ properties-ms:
     notificationsMsUrl: http://notifications-ms:8004
     paymentsMsUrl: http://payments-ms:8003
     redisUrl: redis://brighter-redis-master:6379/0
-    r2AccountId: ""
-    r2BucketName: ""
-    r2PublicUrl: ""
+    r2AccountId: "71cf48d241e985030c9a4ab717a9f310"
+    r2BucketName: brighter-images
+    r2PublicUrl: "https://pub-17e70366da794cf2bf474c8fa65b4aa6.r2.dev"
     otelExporterOtlpEndpoint: "http://otel-collector:4317"
     otelSdkDisabled: "false"
   secrets:
@@ -176,7 +178,7 @@ notifications-ms:
     port: 8004
   config:
     logLevel: INFO
-    fromEmail: 'Ploshtadka.BG <noreply@xn--80aalycsf6f.xn--90ae>'
+    fromEmail: 'Почивка на море <noreply@xn--80aalycsf6f.xn--90ae>'
     otelExporterOtlpEndpoint: "http://otel-collector:4317"
     otelSdkDisabled: "false"
   secrets:
@@ -231,4 +233,225 @@ admin-panel:
 
 observability:
   enabled: true
-  tempoEndpoint: http://tempo:3200
+  # gRPC endpoint used by the OTEL Collector → Tempo (no http:// scheme)
+  tempoGrpcEndpoint: brighter-tempo:4317
+  # HTTP URL used by Grafana → Tempo datasource
+  tempoHttpUrl: http://brighter-tempo:3100
+
+# ── Observability subcharts ────────────────────────────────────────────────────
+
+tempo:
+  tempo:
+    server:
+      http_listen_port: 3100
+    distributor:
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+              endpoint: 0.0.0.0:4317
+    ingester:
+      max_block_duration: 5m
+    compactor:
+      compaction:
+        block_retention: 48h
+    storage:
+      trace:
+        backend: local
+        local:
+          path: /var/tempo/blocks
+        wal:
+          path: /var/tempo/wal
+  persistence:
+    enabled: false
+  reportingEnabled: false
+
+loki:
+  deploymentMode: SingleBinary
+  loki:
+    auth_enabled: false
+    commonConfig:
+      replication_factor: 1
+    storage:
+      type: filesystem
+    schemaConfig:
+      configs:
+        - from: "2020-10-24"
+          store: tsdb
+          object_store: filesystem
+          schema: v13
+          index:
+            prefix: index_
+            period: 24h
+    limits_config:
+      reject_old_samples: true
+      reject_old_samples_max_age: 168h
+  singleBinary:
+    replicas: 1
+  # Disable the read/write/backend split-mode replicas
+  read:
+    replicas: 0
+  write:
+    replicas: 0
+  backend:
+    replicas: 0
+  gateway:
+    enabled: false
+  monitoring:
+    selfMonitoring:
+      enabled: false
+      grafanaAgent:
+        installOperator: false
+    serviceMonitor:
+      enabled: false
+  test:
+    enabled: false
+
+promtail:
+  config:
+    clients:
+      - url: http://brighter-loki:3100/loki/api/v1/push
+    snippets:
+      scrapeConfigs: |
+        - job_name: brighter-pods
+          kubernetes_sd_configs:
+            - role: pod
+              namespaces:
+                names:
+                  - brighter
+          relabel_configs:
+            - source_labels: [__meta_kubernetes_pod_label_app]
+              regex: "(users-ms|properties-ms|bookings-ms|payments-ms|notifications-ms)"
+              action: keep
+            - source_labels: [__meta_kubernetes_pod_label_app]
+              target_label: service
+            - source_labels: [__meta_kubernetes_pod_name]
+              target_label: pod
+            - source_labels: [__meta_kubernetes_namespace]
+              target_label: namespace
+          pipeline_stages:
+            - static_labels:
+                job: brighter
+
+grafana:
+  # Admin password sourced from secret — generate before install:
+  # kubectl create secret generic grafana-admin-secret -n brighter \
+  #   --from-literal=admin-user=admin \
+  #   --from-literal=admin-password="$(openssl rand -base64 32)"
+  admin:
+    existingSecret: grafana-admin-secret
+    userKey: admin-user
+    passwordKey: admin-password
+  env:
+    GF_AUTH_ANONYMOUS_ENABLED: "true"
+    GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    GF_AUTH_DISABLE_LOGIN_FORM: "false"
+    TELEGRAM_CHAT_ID: "1370280956"
+    GRAFANA_EXTERNAL_URL: "http://localhost:3000"
+  # TELEGRAM_BOT_TOKEN is the only value that belongs in the sealed secret.
+  # Seal with: ./scripts/seal.sh <namespace> grafana
+  envFromSecret: grafana-alerting-secrets
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          uid: prometheus
+          url: http://brighter-prometheus-server
+          isDefault: true
+          jsonData:
+            exemplarTraceIdDestinations:
+              - name: trace_id
+                datasourceUid: tempo
+        - name: Tempo
+          type: tempo
+          uid: tempo
+          url: http://brighter-tempo:3100
+          jsonData:
+            tracesToLogsV2:
+              datasourceUid: loki
+              spanStartTimeShift: "-1m"
+              spanEndTimeShift: "1m"
+              filterByTraceID: false
+              customQuery: true
+              query: '{service="${__span.tags[\"service.name\"]}"} |= "${__trace.traceId}"'
+            serviceMap:
+              datasourceUid: prometheus
+            lokiSearch:
+              datasourceUid: loki
+            nodeGraph:
+              enabled: true
+        - name: Loki
+          type: loki
+          uid: loki
+          url: http://brighter-loki:3100
+          jsonData:
+            derivedFields:
+              - name: TraceID
+                matcherRegex: '\| ([0-9a-f]{32}) \|'
+                url: "${__value.raw}"
+                internalLink: true
+                datasourceUid: tempo
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: default
+          folder: Brighter
+          type: file
+          options:
+            path: /var/lib/grafana/dashboards/default
+  dashboardsConfigMaps:
+    default: brighter-grafana-dashboards
+  # Alerting config (contact-points, policies, rules) is mounted from
+  # brighter-grafana-alerting ConfigMap to avoid Helm tpl processing the
+  # Grafana-native {{ }} template syntax in alert messages.
+  extraConfigmapMounts:
+    - name: alerting
+      mountPath: /etc/grafana/provisioning/alerting
+      configMap: brighter-grafana-alerting
+      readOnly: true
+
+prometheus:
+  server:
+    persistentVolume:
+      enabled: false
+  alertmanager:
+    enabled: false
+  kube-state-metrics:
+    enabled: false
+  prometheus-node-exporter:
+    enabled: false
+  prometheus-pushgateway:
+    enabled: false
+  serverFiles:
+    prometheus.yml:
+      global:
+        scrape_interval: 15s
+        evaluation_interval: 15s
+      scrape_configs:
+        - job_name: users-ms
+          static_configs:
+            - targets: ['users-ms:8000']
+          metrics_path: /metrics
+        - job_name: properties-ms
+          static_configs:
+            - targets: ['properties-ms:8001']
+          metrics_path: /metrics
+        - job_name: bookings-ms
+          static_configs:
+            - targets: ['bookings-ms:8002']
+          metrics_path: /metrics
+        - job_name: payments-ms
+          static_configs:
+            - targets: ['payments-ms:8003']
+          metrics_path: /metrics
+        - job_name: notifications-ms
+          static_configs:
+            - targets: ['notifications-ms:8004']
+          metrics_path: /metrics
+        - job_name: otel-collector
+          static_configs:
+            - targets: ['otel-collector:8888']
+          metrics_path: /metrics
