@@ -1,0 +1,38 @@
+# Staging overrides — higher replica counts, DEBUG logging, smaller resources
+global:
+  domain: staging.площадка.бг
+
+postgresql:
+  instances: 1
+  storage:
+    size: 5Gi
+
+redis:
+  master:
+    persistence:
+      enabled: true
+      size: 512Mi
+
+users-ms:
+  replicaCount: 1
+  config:
+    logLevel: DEBUG
+    accessTokenExpireMinutes: "60"
+
+properties-ms:
+  replicaCount: 1
+  config:
+    logLevel: DEBUG
+
+bookings-ms:
+  replicaCount: 1
+  config:
+    logLevel: DEBUG
+
+payments-ms:
+  replicaCount: 1
+
+notifications-ms:
+  replicaCount: 1
+  config:
+    logLevel: DEBUG

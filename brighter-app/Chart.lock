@@ -1,0 +1,27 @@
+dependencies:
+- name: redis
+  repository: https://charts.bitnami.com/bitnami
+  version: 25.5.3
+- name: users-ms
+  repository: ""
+  version: 1.0.0
+- name: properties-ms
+  repository: ""
+  version: 1.0.0
+- name: bookings-ms
+  repository: ""
+  version: 1.0.0
+- name: payments-ms
+  repository: ""
+  version: 1.0.0
+- name: notifications-ms
+  repository: ""
+  version: 1.0.0
+- name: frontend
+  repository: ""
+  version: 1.0.0
+- name: admin-panel
+  repository: ""
+  version: 1.0.0
+digest: sha256:c5cc763d54e3aa51897785685bf2cff7c1309c9c16f60c3b525da36581a7a811
+generated: "2026-05-27T16:24:34.211940495+03:00"

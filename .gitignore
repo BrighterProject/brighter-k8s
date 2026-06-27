@@ -1,1 +1,4 @@
 charts/*.tgz
+# Helm dependency tarballs live under each chart's charts/ dir after the split
+# into brighter-app/ and brighter-obs/. Fetched via `helm dependency update`.
+**/charts/*.tgz

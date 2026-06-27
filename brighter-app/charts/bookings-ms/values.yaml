@@ -1,0 +1,27 @@
+replicaCount: 1
+image:
+  repository: ghcr.io/brighterproject/brighter-bookings-ms
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  port: 8002
+config:
+  logLevel: INFO
+  usersMsUrl: http://users-ms:8000
+  propertiesMsUrl: http://properties-ms:8001
+  paymentsMsUrl: http://payments-ms:8003
+  notificationsMsUrl: http://notifications-ms:8004
+  redisUrl: redis://brighter-redis-master:6379/0
+resources:
+  requests:
+    memory: 128Mi
+    cpu: 100m
+  limits:
+    memory: 256Mi
+hpa:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+global:
+  dbSecretName: brighter-db-app
