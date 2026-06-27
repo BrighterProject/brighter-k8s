@@ -1,8 +1,14 @@
 # ── Global values (propagated to every subchart as .Values.global.*) ──────────
 global:
-  domain: xn--80aalycsf6f.xn--90ae
+  domain: pochivka-na-moreto.bg
   dbSecretName: brighter-db-app
   entryPoint: web
+
+  # Scheme used when building externally-visible URLs (Stripe redirects, email
+  # links). Defaults to https when Traefik terminates TLS, http otherwise; set
+  # explicitly to https when an upstream proxy (e.g. Caddy) terminates TLS while
+  # Traefik still receives plain http.
+  publicScheme: ""
 
   tls:
     enabled: false
@@ -178,7 +184,7 @@ notifications-ms:
     port: 8004
   config:
     logLevel: INFO
-    fromEmail: 'Почивка на море <noreply@xn--80aalycsf6f.xn--90ae>'
+    fromEmail: 'Почивка на море <noreply@pochivka-na-moreto.bg>'
     otelExporterOtlpEndpoint: "http://otel-collector:4317"
     otelSdkDisabled: "false"
   secrets:

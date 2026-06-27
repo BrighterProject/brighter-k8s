@@ -16,7 +16,7 @@ data:
   SMTP_PORT: {{ .Values.config.smtpPort | quote }}
   SMTP_USER: {{ .Values.config.smtpUser | quote }}
   NOTIFICATIONS_MS_URL: {{ .Values.config.notificationsMsUrl | quote }}
-  {{- $scheme := ternary "https" "http" .Values.global.tls.enabled }}
+  {{- $scheme := .Values.global.publicScheme | default (ternary "https" "http" .Values.global.tls.enabled) }}
   FRONTEND_BASE_URL: {{ .Values.config.frontendBaseUrl | default (printf "%s://%s" $scheme .Values.global.domain) | quote }}
   COOKIE_SECURE: {{ .Values.config.cookieSecure | quote }}
   OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.config.otelExporterOtlpEndpoint | quote }}

@@ -10,7 +10,7 @@ data:
   NOTIFICATIONS_MS_URL: {{ .Values.config.notificationsMsUrl | quote }}
   PROPERTIES_MS_URL: {{ .Values.config.propertiesMsUrl | quote }}
   USERS_MS_URL: {{ .Values.config.usersMsUrl | quote }}
-  {{- $scheme := ternary "https" "http" .Values.global.tls.enabled }}
+  {{- $scheme := .Values.global.publicScheme | default (ternary "https" "http" .Values.global.tls.enabled) }}
   {{- $baseUrl := printf "%s://%s" $scheme .Values.global.domain }}
   STRIPE_SUCCESS_URL: {{ .Values.config.stripeSuccessUrl | default (printf "%s/{locale}/bookings/success" $baseUrl) | quote }}
   STRIPE_CANCEL_URL: {{ .Values.config.stripeCancelUrl | default (printf "%s/{locale}/bookings/cancel" $baseUrl) | quote }}

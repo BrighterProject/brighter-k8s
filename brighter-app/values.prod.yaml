@@ -1,9 +1,13 @@
 # Production overrides — TLS, resource limits, Redis persistence
 global:
-  domain: xn--80aalycsf6f.xn--90ae
+  domain: pochivka-na-moreto.bg
   # TLS is terminated by Caddy at the host level; Traefik receives plain HTTP
   # on NodePort 30080 and trusts X-Forwarded-Proto: https from Caddy.
   entryPoint: web
+  # Caddy serves the site over https, so externally-visible URLs (Stripe
+  # redirects, email links) must use https even though Traefik's entryPoint is
+  # plain http and tls.enabled is false.
+  publicScheme: https
   tls:
     enabled: false
 
