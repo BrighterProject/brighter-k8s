@@ -1,0 +1,238 @@
+# ── Global values (propagated to every subchart as .Values.global.*) ──────────
+global:
+  domain: pochivka-na-moreto.bg
+  dbSecretName: brighter-db-app
+  entryPoint: web
+
+  # Scheme used when building externally-visible URLs (Stripe redirects, email
+  # links). Defaults to https when Traefik terminates TLS, http otherwise; set
+  # explicitly to https when an upstream proxy (e.g. Caddy) terminates TLS while
+  # Traefik still receives plain http.
+  publicScheme: ""
+
+  tls:
+    enabled: false
+    certResolver: letsencrypt
+
+redis:
+  architecture: standalone
+  auth:
+    enabled: false
+  master:
+    persistence:
+      enabled: false
+  replica:
+    replicaCount: 0
+
+postgresql:
+  instances: 1
+  storage:
+    size: 10Gi
+
+  credentialsSecretName: brighter-db-credentials
+
+users-ms:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/brighterproject/brighter-users-ms
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    port: 8000
+  config:
+    logLevel: INFO
+    accessTokenExpireMinutes: "120"
+    redisUrl: redis://brighter-redis-master:6379/0
+    contactEmail: ploshtadka.bg@gmail.com
+    contactRateLimit: "5"
+    contactRateWindow: "3600"
+    googleClientId: "347686290554-c9b0dj5fpusmicbr2a1rhc41qm2a0in5.apps.googleusercontent.com"
+    smtpHost: smtp.gmail.com
+    smtpPort: "587"
+    smtpUser: ploshtadka.bg@gmail.com
+    notificationsMsUrl: http://notifications-ms:8004
+    cookieSecure: "false"
+    otelExporterOtlpEndpoint: "http://otel-collector:4317"
+    otelSdkDisabled: "false"
+  secrets:
+    # provides SECRET_KEY, SMTP_PASSWORD, TURNSTILE_SECRET_KEY
+    name: users-ms-secrets
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 100m
+    limits:
+      memory: 256Mi
+  hpa:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+
+properties-ms:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/brighterproject/brighter-properties-ms
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    port: 8001
+  config:
+    logLevel: INFO
+    usersMsUrl: http://users-ms:8000
+    bookingsMsUrl: http://bookings-ms:8002
+    notificationsMsUrl: http://notifications-ms:8004
+    paymentsMsUrl: http://payments-ms:8003
+    redisUrl: redis://brighter-redis-master:6379/0
+    r2AccountId: "71cf48d241e985030c9a4ab717a9f310"
+    r2BucketName: brighter-images
+    r2PublicUrl: "https://pub-17e70366da794cf2bf474c8fa65b4aa6.r2.dev"
+    otelExporterOtlpEndpoint: "http://otel-collector:4317"
+    otelSdkDisabled: "false"
+  secrets:
+    # provides R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY
+    name: properties-ms-secrets
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 100m
+    limits:
+      memory: 256Mi
+  hpa:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+
+bookings-ms:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/brighterproject/brighter-bookings-ms
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    port: 8002
+  config:
+    logLevel: INFO
+    usersMsUrl: http://users-ms:8000
+    propertiesMsUrl: http://properties-ms:8001
+    paymentsMsUrl: http://payments-ms:8003
+    notificationsMsUrl: http://notifications-ms:8004
+    redisUrl: redis://brighter-redis-master:6379/0
+    otelExporterOtlpEndpoint: "http://otel-collector:4317"
+    otelSdkDisabled: "false"
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 100m
+    limits:
+      memory: 256Mi
+  hpa:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+
+payments-ms:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/brighterproject/brighter-payments-ms
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    port: 8003
+  config:
+    logLevel: INFO
+    bookingsMsUrl: http://bookings-ms:8002
+    notificationsMsUrl: http://notifications-ms:8004
+    propertiesMsUrl: http://properties-ms:8001
+    usersMsUrl: http://users-ms:8000
+    stripeCheckoutExpiresMinutes: "30"
+    stripeConnectRefreshUri: ""      # derived from global.domain at render time
+    stripeConnectSuccessUrl: ""      # derived from global.domain at render time
+    stripePlatformFeePercent: "10.0"
+    stripeProcessingFeePct: "1.5"
+    stripeProcessingFeeFixedEurCents: "25"
+    stripeSubscriptionSuccessUrl: "" # derived from global.domain at render time
+    stripeSubscriptionCancelUrl: ""  # derived from global.domain at render time
+    stripePortalReturnUrl: ""        # derived from global.domain at render time
+    redisUrl: redis://brighter-redis-master:6379/0
+    otelExporterOtlpEndpoint: "http://otel-collector:4317"
+    otelSdkDisabled: "false"
+  secrets:
+    # provides STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_CONNECT_WEBHOOK_SECRET, INTERNAL_API_KEY
+    name: payments-ms-secrets
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 100m
+    limits:
+      memory: 256Mi
+  hpa:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 70
+
+notifications-ms:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/brighterproject/brighter-notifications-ms
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    port: 8004
+  config:
+    logLevel: INFO
+    fromEmail: 'Почивка на море <noreply@pochivka-na-moreto.bg>'
+    otelExporterOtlpEndpoint: "http://otel-collector:4317"
+    otelSdkDisabled: "false"
+  secrets:
+    # provides RESEND_API_KEY
+    name: notifications-ms-secrets
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 100m
+    limits:
+      memory: 256Mi
+  hpa:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 70
+
+frontend:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/brighterproject/brighter-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    port: 3000
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 50m
+    limits:
+      memory: 128Mi
+  hpa:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+
+admin-panel:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/brighterproject/brighter-admin-panel
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    port: 3000
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 50m
+    limits:
+      memory: 128Mi

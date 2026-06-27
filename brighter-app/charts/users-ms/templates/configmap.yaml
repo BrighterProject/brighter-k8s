@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "users-ms.fullname" . }}-config
+  labels:
+    {{- include "users-ms.labels" . | nindent 4 }}
+data:
+  LOG_LEVEL: {{ .Values.config.logLevel | quote }}
+  ACCESS_TOKEN_EXPIRE_MINUTES: {{ .Values.config.accessTokenExpireMinutes | quote }}
+  REDIS_URL: {{ .Values.config.redisUrl | quote }}
+  CONTACT_EMAIL: {{ .Values.config.contactEmail | quote }}
+  CONTACT_RATE_LIMIT: {{ .Values.config.contactRateLimit | quote }}
+  CONTACT_RATE_WINDOW: {{ .Values.config.contactRateWindow | quote }}
+  GOOGLE_CLIENT_ID: {{ .Values.config.googleClientId | quote }}
+  SMTP_HOST: {{ .Values.config.smtpHost | quote }}
+  SMTP_PORT: {{ .Values.config.smtpPort | quote }}
+  SMTP_USER: {{ .Values.config.smtpUser | quote }}
+  NOTIFICATIONS_MS_URL: {{ .Values.config.notificationsMsUrl | quote }}
+  {{- $scheme := .Values.global.publicScheme | default (ternary "https" "http" .Values.global.tls.enabled) }}
+  FRONTEND_BASE_URL: {{ .Values.config.frontendBaseUrl | default (printf "%s://%s" $scheme .Values.global.domain) | quote }}
+  COOKIE_SECURE: {{ .Values.config.cookieSecure | quote }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.config.otelExporterOtlpEndpoint | quote }}
+  OTEL_SDK_DISABLED: {{ .Values.config.otelSdkDisabled | quote }}
+  FORWARDED_ALLOW_IPS: "*"
