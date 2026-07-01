@@ -36,7 +36,7 @@ spec:
   entryPoints:
     - {{ .Values.global.entryPoint | default "web" }}
   routes:
-    - match: "Host(`{{ .Values.global.domain }}`) && ((Method(`OPTIONS`) && (PathPrefix(`/api/payments`) || PathPrefix(`/api/subscriptions`))) || (Method(`GET`) && Path(`/api/payments/subscriptions/plans`)))"
+    - match: "Host(`{{ .Values.global.domain }}`) && ((Method(`OPTIONS`) && PathPrefix(`/api/payments`)) || (Method(`GET`) && Path(`/api/payments/subscriptions/plans`)))"
       priority: 10
       middlewares:
         - name: {{ include "payments-ms.apiStripMiddleware" . }}
@@ -58,7 +58,7 @@ spec:
   entryPoints:
     - {{ .Values.global.entryPoint | default "web" }}
   routes:
-    - match: "Host(`{{ .Values.global.domain }}`) && (PathPrefix(`/api/payments`) || PathPrefix(`/api/subscriptions`))"
+    - match: "Host(`{{ .Values.global.domain }}`) && PathPrefix(`/api/payments`)"
       priority: 5
       middlewares:
         - name: {{ include "payments-ms.jwtAuthMiddleware" . }}
