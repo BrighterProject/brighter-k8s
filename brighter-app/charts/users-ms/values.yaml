@@ -21,6 +21,9 @@ config:
 
 secrets:
   name: users-ms-secrets
+# Apply pending Tortoise migrations via an initContainer before the app starts.
+migrations:
+  enabled: true
 
 resources:
   requests:

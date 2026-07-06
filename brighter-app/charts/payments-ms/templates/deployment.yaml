@@ -15,11 +15,40 @@ spec:
         {{- include "payments-ms.selectorLabels" . | nindent 8 }}
     spec:
       initContainers:
-        # Migrations run in a pre-install/pre-upgrade Job hook (job-migrate.yaml).
-        # This init container just gates pod start until the DB port is reachable.
+        # Gate pod start until the DB port is reachable.
         - name: wait-for-db
           image: busybox:1.36
           command: ['sh', '-c', 'until nc -z brighter-db-rw 5432; do sleep 2; done']
+        {{- if .Values.migrations.enabled }}
+        # Apply pending Tortoise migrations before the app starts. Reuses this
+        # pod's already-pulled image (no separate Job, no image pull), so it adds
+        # ~1-2s and runs on every rollout including `kubectl set image` — not just
+        # `helm upgrade`. --no-sync skips dependency resolution (deps are baked
+        # into the image); idempotent, so it is a no-op when nothing is pending.
+        - name: migrate
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["uv", "run", "--no-sync", "tortoise", "-c", "main.TORTOISE_ORM", "upgrade"]
+          envFrom:
+            - configMapRef:
+                name: {{ include "payments-ms.fullname" . }}-config
+            - secretRef:
+                name: {{ .Values.secrets.name }}
+          env:
+            - name: DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.dbSecretName }}
+                  key: uri
+            - name: OTEL_SDK_DISABLED
+              value: "true"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+        {{- end }}
 
       containers:
         - name: payments-ms

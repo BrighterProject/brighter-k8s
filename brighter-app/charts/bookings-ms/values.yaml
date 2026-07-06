@@ -19,6 +19,9 @@ config:
 # provides BOOKING_FIELD_ENCRYPTION_KEY, CHECKIN_TOKEN_SECRET, INTERNAL_CRON_SECRET
 secrets:
   name: bookings-ms-secrets
+# Apply pending Tortoise migrations via an initContainer before the app starts.
+migrations:
+  enabled: true
 # Daily CronJobs driving the guest check-in dispatch + GDPR purge (BTR-15).
 # They call the bookings-ms /internal endpoints directly (never via Traefik)
 # with the INTERNAL_CRON_SECRET.

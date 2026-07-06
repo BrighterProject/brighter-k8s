@@ -19,6 +19,9 @@ config:
 secrets:
   # provides R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY
   name: properties-ms-secrets
+# Apply pending Tortoise migrations via an initContainer before the app starts.
+migrations:
+  enabled: true
 resources:
   requests:
     memory: 128Mi

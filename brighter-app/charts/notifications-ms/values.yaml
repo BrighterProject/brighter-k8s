@@ -12,6 +12,9 @@ config:
 secrets:
   # provides RESEND_API_KEY
   name: notifications-ms-secrets
+# Apply pending Tortoise migrations via an initContainer before the app starts.
+migrations:
+  enabled: true
 resources:
   requests:
     memory: 128Mi

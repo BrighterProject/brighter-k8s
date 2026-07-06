@@ -24,6 +24,9 @@ config:
   redisUrl: redis://brighter-redis-master:6379/0
 secrets:
   name: payments-ms-secrets
+# Apply pending Tortoise migrations via an initContainer before the app starts.
+migrations:
+  enabled: true
 resources:
   requests:
     memory: 128Mi
