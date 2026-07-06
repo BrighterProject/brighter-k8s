@@ -32,6 +32,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "bookings-ms.fullname" . }}-config
+            - secretRef:
+                name: {{ .Values.secrets.name }}
           env:
             - name: DB_URL
               valueFrom:

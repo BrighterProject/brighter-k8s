@@ -1,0 +1,73 @@
+{{- if .Values.cron.enabled }}
+# Guest check-in lifecycle jobs (BTR-15). Each hits a bookings-ms /internal
+# endpoint directly on the cluster network (never through Traefik), authorised
+# with INTERNAL_CRON_SECRET from {{ .Values.secrets.name }}. Both endpoints are
+# idempotent, so at-least-once CronJob semantics are safe.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "bookings-ms.fullname" . }}-checkin-dispatch
+  labels:
+    {{- include "bookings-ms.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.cron.dispatchSchedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: dispatch
+              image: {{ .Values.cron.image }}
+              env:
+                - name: INTERNAL_CRON_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.secrets.name }}
+                      key: INTERNAL_CRON_SECRET
+              args:
+                - "-fsS"
+                - "-X"
+                - "POST"
+                - "http://bookings-ms:{{ .Values.service.port }}/internal/checkin/dispatch"
+                - "-H"
+                - "Authorization: Bearer $(INTERNAL_CRON_SECRET)"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "bookings-ms.fullname" . }}-checkin-purge
+  labels:
+    {{- include "bookings-ms.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.cron.purgeSchedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: purge
+              image: {{ .Values.cron.image }}
+              env:
+                - name: INTERNAL_CRON_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.secrets.name }}
+                      key: INTERNAL_CRON_SECRET
+              args:
+                - "-fsS"
+                - "-X"
+                - "POST"
+                - "http://bookings-ms:{{ .Values.service.port }}/internal/checkin/purge"
+                - "-H"
+                - "Authorization: Bearer $(INTERNAL_CRON_SECRET)"
+{{- end }}
