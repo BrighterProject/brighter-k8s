@@ -21,3 +21,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- define "bookings-ms.apiStripMiddleware" -}}
 {{ .Release.Name }}-api-strip
 {{- end }}
+
+{{- define "bookings-ms.denyAllMiddleware" -}}
+{{ .Release.Name }}-deny-all
+{{- end }}

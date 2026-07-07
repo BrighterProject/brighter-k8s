@@ -1,10 +1,33 @@
 # bookings-ms routing:
+# Priority 20 (denied): /api/internal/* — explicitly blocked at the edge via
+#   deny-all middleware; the CronJobs call these dispatch/purge endpoints
+#   directly on the cluster network with INTERNAL_CRON_SECRET, never through
+#   Traefik.
 # Priority 10 (public): OPTIONS preflight + GET /bookings/slots (rate limited 60/min per IP via slowapi),
 #   and the guest check-in "lobby" under /api/checkin (the token IS the credential — never jwt-auth).
 # Priority 5 (protected): all other bookings endpoints require JWT.
-# NOTE: /api/internal/* is intentionally matched by no route here, so the internal
-# dispatch/purge endpoints are unreachable through Traefik; the CronJobs call them
-# directly on the cluster network with INTERNAL_CRON_SECRET.
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ include "bookings-ms.fullname" . }}-internal-deny
+  labels:
+    {{- include "bookings-ms.labels" . | nindent 4 }}
+spec:
+  entryPoints:
+    - {{ .Values.global.entryPoint | default "web" }}
+  routes:
+    - match: "Host(`{{ .Values.global.domain }}`) && PathPrefix(`/api/internal`)"
+      priority: 20
+      middlewares:
+        - name: {{ include "bookings-ms.denyAllMiddleware" . }}
+      services:
+        - name: bookings-ms
+          port: {{ .Values.service.port }}
+  {{- if .Values.global.tls.enabled }}
+  tls:
+    certResolver: {{ .Values.global.tls.certResolver }}
+  {{- end }}
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute

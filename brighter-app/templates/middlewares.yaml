@@ -48,3 +48,23 @@ spec:
   stripPrefix:
     prefixes:
       - /admin
+
+---
+# Traefik has no native "deny" action, so external access is blocked by only
+# allowing loopback — no real client ever reaches Traefik from 127.0.0.1, so
+# this middleware rejects every request that arrives through the edge with a
+# 403. Used to explicitly wall off /internal/* paths (e.g. bookings-ms's
+# check-in dispatch/purge jobs) at the ingress layer, as defense in depth on
+# top of the in-app bearer-secret check — those paths are only ever meant to
+# be called pod-to-pod on the cluster network, never through Traefik.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Release.Name }}-deny-all
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  ipAllowList:
+    sourceRange:
+      - "127.0.0.1/32"
