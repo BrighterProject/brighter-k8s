@@ -16,6 +16,9 @@ config:
   checkinTokenGraceDays: "1"
   checkinDispatchLeadDays: "2"
   bookingPurgeWindowDays: "14"
+  # External calendar sync (BTR-41) — per-feed fetch timeout + inter-feed jitter.
+  calendarSyncFetchTimeout: "10"
+  calendarSyncJitterMs: "500"
 # provides BOOKING_FIELD_ENCRYPTION_KEY, CHECKIN_TOKEN_SECRET, INTERNAL_CRON_SECRET
 secrets:
   name: bookings-ms-secrets
@@ -30,6 +33,8 @@ cron:
   image: curlimages/curl:8.11.1
   dispatchSchedule: "0 8 * * *"
   purgeSchedule: "30 3 * * *"
+  # External calendar sweep (BTR-41) — every 10 min, concurrencyPolicy Forbid.
+  calendarSyncSchedule: "*/10 * * * *"
 resources:
   requests:
     memory: 128Mi
