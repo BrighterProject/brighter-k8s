@@ -12,6 +12,24 @@ config:
   paymentsMsUrl: http://payments-ms:8003
   notificationsMsUrl: http://notifications-ms:8004
   redisUrl: redis://brighter-redis-master:6379/0
+  # Guest check-in flow (BTR-15) grace periods — non-secret.
+  checkinTokenGraceDays: "1"
+  checkinDispatchLeadDays: "2"
+  bookingPurgeWindowDays: "14"
+# provides BOOKING_FIELD_ENCRYPTION_KEY, CHECKIN_TOKEN_SECRET, INTERNAL_CRON_SECRET
+secrets:
+  name: bookings-ms-secrets
+# Apply pending Tortoise migrations via an initContainer before the app starts.
+migrations:
+  enabled: true
+# Daily CronJobs driving the guest check-in dispatch + GDPR purge (BTR-15).
+# They call the bookings-ms /internal endpoints directly (never via Traefik)
+# with the INTERNAL_CRON_SECRET.
+cron:
+  enabled: true
+  image: curlimages/curl:8.11.1
+  dispatchSchedule: "0 8 * * *"
+  purgeSchedule: "30 3 * * *"
 resources:
   requests:
     memory: 128Mi

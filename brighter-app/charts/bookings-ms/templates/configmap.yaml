@@ -14,3 +14,6 @@ data:
   OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.config.otelExporterOtlpEndpoint | quote }}
   OTEL_SDK_DISABLED: {{ .Values.config.otelSdkDisabled | quote }}
   FORWARDED_ALLOW_IPS: "*"
+  CHECKIN_TOKEN_GRACE_DAYS: {{ .Values.config.checkinTokenGraceDays | quote }}
+  CHECKIN_DISPATCH_LEAD_DAYS: {{ .Values.config.checkinDispatchLeadDays | quote }}
+  BOOKING_PURGE_WINDOW_DAYS: {{ .Values.config.bookingPurgeWindowDays | quote }}

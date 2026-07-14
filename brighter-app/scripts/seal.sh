@@ -10,6 +10,7 @@
 #   ./scripts/seal.sh [namespace] db       # seal only db-credentials
 #   ./scripts/seal.sh [namespace] users    # seal only users-ms-secrets
 #   ./scripts/seal.sh [namespace] payments      # seal only payments-ms-secrets
+#   ./scripts/seal.sh [namespace] bookings      # seal only bookings-ms-secrets
 #   ./scripts/seal.sh [namespace] notifications # seal only notifications-ms-secrets
 #   ./scripts/seal.sh [namespace] properties    # seal only properties-ms-secrets
 #   ./scripts/seal.sh [namespace] grafana       # seal only grafana secrets
@@ -63,6 +64,23 @@ seal_payments() {
     --dry-run=client -o yaml \
     | kubeseal --format yaml \
     > "$OUT/payments-ms-secrets.yaml"
+}
+
+seal_bookings() {
+  echo "  → bookings-ms-secrets"
+  echo "  (BOOKING_FIELD_ENCRYPTION_KEY: generate with"
+  echo "     python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())')"
+  read -rs -p "  BOOKING_FIELD_ENCRYPTION_KEY (Fernet): " FIELD_KEY; echo
+  read -rs -p "  CHECKIN_TOKEN_SECRET: " CHECKIN_SECRET; echo
+  read -rs -p "  INTERNAL_CRON_SECRET: " CRON_SECRET; echo
+  kubectl create secret generic bookings-ms-secrets \
+    --namespace "$NS" \
+    --from-literal=BOOKING_FIELD_ENCRYPTION_KEY="$FIELD_KEY" \
+    --from-literal=CHECKIN_TOKEN_SECRET="$CHECKIN_SECRET" \
+    --from-literal=INTERNAL_CRON_SECRET="$CRON_SECRET" \
+    --dry-run=client -o yaml \
+    | kubeseal --format yaml \
+    > "$OUT/bookings-ms-secrets.yaml"
 }
 
 seal_notifications() {
@@ -123,11 +141,12 @@ case "$TARGET" in
   db)            seal_db ;;
   users)         seal_users ;;
   payments)      seal_payments ;;
+  bookings)      seal_bookings ;;
   notifications) seal_notifications ;;
   properties)    seal_properties ;;
   grafana)       seal_grafana ;;
-  all)           seal_db; seal_users; seal_payments; seal_notifications; seal_properties; seal_grafana ;;
-  *)             echo "Unknown target: $TARGET (use: db, users, payments, notifications, properties, grafana, or all)"; exit 1 ;;
+  all)           seal_db; seal_users; seal_payments; seal_bookings; seal_notifications; seal_properties; seal_grafana ;;
+  *)             echo "Unknown target: $TARGET (use: db, users, payments, bookings, notifications, properties, grafana, or all)"; exit 1 ;;
 esac
 
 echo ""

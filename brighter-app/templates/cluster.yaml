@@ -17,7 +17,9 @@ metadata:
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
 spec:
   instances: {{ .Values.postgresql.instances }}
-  imageName: ghcr.io/cloudnative-pg/postgresql:16
+  # Custom CNPG image bakes in the Bulgarian ispell FTS dictionaries. Defaults to the
+  # stock CNPG image (fine for local/minikube); prod/staging override with the custom one.
+  imageName: {{ .Values.postgresql.imageName | default "ghcr.io/cloudnative-pg/postgresql:16" }}
 
   storage:
     size: {{ .Values.postgresql.storage.size }}
