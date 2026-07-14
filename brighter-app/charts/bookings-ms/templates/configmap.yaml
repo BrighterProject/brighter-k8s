@@ -17,3 +17,5 @@ data:
   CHECKIN_TOKEN_GRACE_DAYS: {{ .Values.config.checkinTokenGraceDays | quote }}
   CHECKIN_DISPATCH_LEAD_DAYS: {{ .Values.config.checkinDispatchLeadDays | quote }}
   BOOKING_PURGE_WINDOW_DAYS: {{ .Values.config.bookingPurgeWindowDays | quote }}
+  CALENDAR_SYNC_FETCH_TIMEOUT: {{ .Values.config.calendarSyncFetchTimeout | quote }}
+  CALENDAR_SYNC_JITTER_MS: {{ .Values.config.calendarSyncJitterMs | quote }}

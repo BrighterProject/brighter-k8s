@@ -1,0 +1,44 @@
+{{- if .Values.cron.enabled }}
+# External calendar import sweep (BTR-41). Polls every active Booking.com iCal feed
+# and mirrors reservations as read-only channel bookings, hitting the bookings-ms
+# /internal endpoint directly on the cluster network (never through Traefik),
+# authorised with INTERNAL_CRON_SECRET from {{ .Values.secrets.name }}.
+#
+# concurrencyPolicy: Forbid — a slow sweep (many feeds × fetch timeout × retry) must
+# never overlap the next fire and exhaust the DB connection pool. Per-feed writes are
+# already race-safe via the atomic upsert on (property_id, channel, external_uid), and
+# the sync is fail-safe (a fetch/parse error keeps existing imported bookings).
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "bookings-ms.fullname" . }}-calendar-sync
+  labels:
+    {{- include "bookings-ms.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.cron.calendarSyncSchedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: calendar-sync
+              image: {{ .Values.cron.image }}
+              env:
+                - name: INTERNAL_CRON_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.secrets.name }}
+                      key: INTERNAL_CRON_SECRET
+              args:
+                - "-fsS"
+                - "-X"
+                - "POST"
+                - "http://bookings-ms:{{ .Values.service.port }}/internal/calendar-sync/run"
+                - "-H"
+                - "Authorization: Bearer $(INTERNAL_CRON_SECRET)"
+{{- end }}
