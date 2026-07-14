@@ -13,6 +13,8 @@ global:
 
 postgresql:
   instances: 1
+  # CNPG image with Bulgarian ispell FTS dictionaries (built from brighter-postgres/Dockerfile.cnpg).
+  imageName: ghcr.io/brighterproject/brighter-postgres-cnpg:16
   storage:
     size: 50Gi
 
@@ -36,6 +38,7 @@ users-ms:
   config:
     logLevel: INFO
     cookieSecure: "true"
+    googleClientId: "372732163661-tre0e0ipb4cl05nkqmf5pce38acus1r8.apps.googleusercontent.com"
   resources:
     requests:
       memory: 96Mi

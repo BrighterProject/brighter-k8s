@@ -118,6 +118,34 @@ The obs chart sets `fullnameOverride` so these names are fixed regardless of the
 | `grafana-admin-secret` | obs | seal.sh | `admin-user`, `admin-password` |
 | `grafana-alerting-secrets` | obs | seal.sh (optional) | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `GRAFANA_EXTERNAL_URL` |
 
+## PostgreSQL image — Bulgarian full-text search
+
+`properties-ms` full-text search over `property_translations` depends on a `bulgarian`
+Postgres text-search configuration backed by an ispell dictionary. That config, its
+dictionary files, and `init-bulgarian-fts.sql` live in the **`brighter-postgres`** repo —
+but the original image is `postgres:16-alpine` and relies on `/docker-entrypoint-initdb.d/`,
+neither of which CloudNativePG (CNPG) supports. So on the CNPG cluster the `bulgarian`
+config was **missing**, and any `bg` translation insert/read failed with
+`text search configuration "bulgarian" does not exist` / `column "search_vector" does not exist`.
+
+**Fix:** a CNPG-compatible image (`brighter-postgres/Dockerfile.cnpg`, built
+`FROM ghcr.io/cloudnative-pg/postgresql:16`) bakes the dictionary files into
+`/usr/share/postgresql/16/tsearch_data/`. The cluster's `imageName` is now a chart value:
+
+- `templates/cluster.yaml` → `imageName: {{ .Values.postgresql.imageName | default "ghcr.io/cloudnative-pg/postgresql:16" }}`
+- `values.prod.yaml` → `postgresql.imageName: ghcr.io/brighterproject/brighter-postgres-cnpg:16`
+  (stock image remains the default for local/minikube; set the same in `values.staging.yaml` if staging needs bg FTS)
+
+CNPG does **not** run init SQL on an existing cluster, so the `bulgarian` config is created
+out-of-band. To build + push the image, point the cluster at it, and create the config:
+
+```bash
+KUBECONFIG=~/.kube/ploshtadka-prod ../brighter-postgres/apply-cnpg-image.sh
+```
+
+The script is idempotent (see `brighter-postgres/bulgarian-fts-reconcile.sql`). On a
+single-instance cluster the image swap restarts the primary — expect ~30-60s write downtime.
+
 ## Gotchas
 
 | Issue | Fix |
@@ -127,6 +155,7 @@ The obs chart sets `fullnameOverride` so these names are fixed regardless of the
 | `forwardAuth 500` | Traefik is in `traefik` ns — `middlewares.yaml` uses FQDN `users-ms.default.svc.cluster.local` (already correct) |
 | `CRD not found` on `helm install` | Run `prerequisites.sh` first |
 | IngressRoute 404 | `global.domain` must match the Host header exactly (case-sensitive) |
+| `text search configuration "bulgarian" does not exist` / `column "search_vector" does not exist` | CNPG cluster is on the stock Postgres image — build/apply the custom image (see "PostgreSQL image — Bulgarian full-text search" above) |
 
 ## Git & Branch Workflow
 
